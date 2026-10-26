@@ -59,6 +59,12 @@ PROJECTS = [
          stat="이전 수치 철회", stat_cap="측정 파이프라인 결함을 스스로 발견",
          summary="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들어 카메라·VMS 연동 시스템 개발에 실제로 썼고, 함정 시나리오 64종으로 평가했다. "
                  "\"위반 0%\"는 수정 전 플러그인을 채점한 결과였다."),
+    dict(slug="onvif-rag", group="more", period="2026.06~10", accent="#be123c",
+         kind="회사 프로젝트", label="회사 프로젝트 · 코드 비공개",
+         hook="7B 모델로 표준 문서 질문에 답할 수 있나",
+         stat="0.074 → 0.894", stat_cap="자체 평가 9문항 충족률, 5회 평균",
+         summary="ONVIF 표준 원문을 근거로 답하는 로컬 RAG. 원문은 코드로 뽑아 그대로 보여 주고 7B에게는 보조 설명만 맡겼다. "
+                 "실제 질문 3개가 자체 평가보다 많은 버그를 잡았다."),
     dict(slug="fire-lora", group="more", period="2026.10", accent="#ea580c",
          kind="실험", label="실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개",
          hook="13/13 복구는 암기였다",
@@ -76,6 +82,7 @@ DOMAINS = {
     "MLOps": "#7c3aed",
     "파인튜닝": "#db2777",
     "LLM 에이전트": "#0f766e",
+    "RAG": "#be123c",
 }
 DOMAINS_BY_SLUG = {
     "edge-deploy": ["VLM", "엣지 디바이스", "경량화·양자화"],
@@ -83,6 +90,7 @@ DOMAINS_BY_SLUG = {
     "vlm-serving": ["VLM", "모델 서빙"],
     "mlops-retrain": ["MLOps", "엣지 디바이스", "경량화·양자화"],
     "senior-principles": ["LLM 에이전트"],
+    "onvif-rag": ["RAG"],
     "fire-lora": ["VLM", "파인튜닝"],
 }
 
@@ -124,7 +132,7 @@ HABITS = [
 LEAK_PATTERNS = [
     r"<!--", r"Claude(가|의 판단| 판단| 초안)", r"\[Claude", r"\[확인", r"<계정>", r"C00_\d", r"review_(codex|gpt)",
     r"FIRE_LORA", r"/home/", r"Desktop", r"(?i)aimatix", r"에이아이매틱스",
-    r"best_alpha", r"\.md\b", r"맑은에스티", r"(?i)malgeun", r"010-?\d{4}-?\d{4}", r"하남시",
+    r"best_alpha", r"\.md\b", r"맑은에스티", r"(?i)malgeun", r"010-?\d{4}-?\d{4}", r"하남시", r"(?i)gitlab", r"\bnas\.", r"(?i)yocto", r"GENn", r"onvif_internal", r"\bMVS\b", r"AIBOX",
 ]
 
 MERMAID_JS = """<script type="module">
