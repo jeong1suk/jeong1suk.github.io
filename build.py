@@ -53,19 +53,19 @@ PROJECTS = [
          summary="카메라 환경별 자동 재학습 파이프라인. 구조를 네 번 갈아엎었고, "
                  "미탐률 이상의 원인은 모델이 아니라 펌웨어였다.",
          figs={0: ["fig_mlops1_pipeline"], 4: ["fig_mlops2_states"], 6: ["fig_mlops3_threshold"]}),
-    dict(slug="senior-principles", group="more", period="2026.04~05", accent="#0f766e",
-         kind="AI 도구", label="회사 프로젝트 · 단독 개발 · 코드 비공개",
+    dict(slug="senior-principles", group="tools", period="2026.04~05", accent="#0f766e",
+         kind="사내 도구", label="회사 프로젝트 · 단독 개발 · 코드 비공개",
          hook="AI 에이전트의 \"완료했습니다\"를 믿을 수 있나",
          stat="이전 수치 철회", stat_cap="측정 파이프라인 결함을 스스로 발견",
          summary="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들어 카메라·VMS 연동 시스템 개발에 실제로 썼고, 함정 시나리오 64종으로 평가했다. "
                  "\"위반 0%\"는 수정 전 플러그인을 채점한 결과였다."),
-    dict(slug="onvif-rag", group="more", period="2026.06~10", accent="#be123c",
-         kind="회사 프로젝트", label="회사 프로젝트 · 코드 비공개",
+    dict(slug="onvif-rag", group="tools", period="2026.06~10", accent="#be123c",
+         kind="사내 도구", label="회사 프로젝트 · 단독 개발 · 코드 비공개",
          hook="7B 모델로 표준 문서 질문에 답할 수 있나",
          stat="0.074 → 0.894", stat_cap="자체 평가 9문항 충족률, 5회 평균",
          summary="ONVIF 표준 원문을 근거로 답하는 로컬 RAG. 원문은 코드로 뽑아 그대로 보여 주고 7B에게는 보조 설명만 맡겼다. "
                  "실제 질문 3개가 자체 평가보다 많은 버그를 잡았다."),
-    dict(slug="fire-lora", group="more", period="2026.10", accent="#ea580c",
+    dict(slug="fire-lora", group="exp", period="2026.10", accent="#ea580c",
          kind="실험", label="실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개",
          hook="13/13 복구는 암기였다",
          stat="88/88 오탐", stat_cap="처음 보는 카메라의 정상 장면",
@@ -337,7 +337,7 @@ def page(title, body, desc=""):
 <body>
 <header class="site"><div class="wrap">
   <a class="brand" href="/">정원석</a>
-  <nav><a href="/#work">작업</a><a href="/#how">일하는 방식</a><a href="{GITHUB}">GitHub</a></nav>
+  <nav><a href="/#work">작업</a><a href="/#tools">도구</a><a href="/#how">일하는 방식</a><a href="{GITHUB}">GitHub</a></nav>
 </div></header>
 {body}
 <footer class="site"><div class="wrap">
@@ -482,7 +482,14 @@ def render_index():
     stats = "".join(f'<div class="hstat"><div class="n">{html.escape(n)}</div><div class="c">{html.escape(c)}</div></div>'
                     for n, c in HERO_STATS)
     main_cards = "\n".join(card(p) for p in PROJECTS if p["group"] == "main")
-    more_cards = "\n".join(card(p, wide=True) for p in PROJECTS if p["group"] == "more")
+    exp_cards = "\n".join(card(p, wide=True) for p in PROJECTS if p["group"] == "exp")
+    tool_cards = "\n".join(card(p) for p in PROJECTS if p["group"] == "tools")
+    learn_cards = "\n".join(card(p) for p in PROJECTS if p["group"] == "learn")
+    learn_sec = (f"""<section class="block" id="learn"><div class="wrap">
+<h2 class="sec-h">배우고 바로 적용한 것</h2>
+<p class="sec-sub">맡은 일을 잘하려고 따로 공부했고, 배운 것은 그 프로젝트에 바로 썼습니다.</p>
+<div class="grid">{learn_cards}</div>
+</div></section>""" if learn_cards else "")
     habits = "".join(
         f'<a class="habit" href="/cases/{slug}/#s{n}"><div class="no">0{k+1}</div><h3>{html.escape(h)}</h3>'
         f'<p>{html.escape(t)}</p><div class="src">{html.escape(by[slug]["hook"])} · {n}번 →</div></a>'
@@ -514,11 +521,19 @@ def render_index():
 </div>
 </div></section>
 
-<section class="block"><div class="wrap">
-<h2 class="sec-h">그 밖의 작업</h2>
-<p class="sec-sub">결과가 좋아 보일 때 측정을 다시 의심한 기록입니다.</p>
-<div class="grid more">{more_cards}</div>
+<section class="block" id="exp"><div class="wrap">
+<h2 class="sec-h">실험</h2>
+<p class="sec-sub">결과가 좋아 보일 때 평가를 다시 의심한 기록입니다.</p>
+<div class="grid">{exp_cards}</div>
 </div></section>
+
+<section class="block" id="tools"><div class="wrap">
+<h2 class="sec-h">개발을 더 잘하기 위해 만든 도구</h2>
+<p class="sec-sub">일하다가 필요해서 직접 만들었고, 사내에서 썼습니다.</p>
+<div class="grid">{tool_cards}</div>
+</div></section>
+
+{learn_sec}
 
 <section class="block" id="how"><div class="wrap">
 <h2 class="sec-h">일하는 방식</h2>
@@ -558,7 +573,7 @@ def main():
     (ROOT / ".nojekyll").write_text("", encoding="utf-8")
     for p in PROJECTS:
         load(p)
-    order = [p for p in PROJECTS if p["group"] == "main"] + [p for p in PROJECTS if p["group"] == "more"]
+    order = [p for g in ("main", "exp", "tools", "learn") for p in PROJECTS if p["group"] == g]
     outputs = [render_case(p, order[(k + 1) % len(order)]) for k, p in enumerate(order)]
     outputs.append(render_index())
     nf = ROOT / "404.html"
