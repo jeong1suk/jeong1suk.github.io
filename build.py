@@ -56,7 +56,7 @@ PROJECTS = [
 LEAK_PATTERNS = [
     r"<!--", r"(?i)claude", r"\[확인", r"<계정>", r"C00_\d", r"review_(codex|gpt)",
     r"FIRE_LORA", r"/home/", r"Desktop", r"(?i)aimatix", r"에이아이매틱스",
-    r"best_alpha", r"\.md\b",
+    r"best_alpha", r"\.md\b", r"맑은에스티", r"(?i)malgeun", r"010-?\d{4}-?\d{4}", r"하남시",
 ]
 
 CSS = """
