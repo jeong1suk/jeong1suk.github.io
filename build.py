@@ -30,6 +30,7 @@ PROJECTS = [
          summary="8GB 공유 메모리에 2차 검증기를 추가할 수 있는지 판정한 기록. "
                  "입력을 줄여 1.8초를 300ms로 만들었고, 재현율은 끝내 측정하지 못했다."),
     dict(slug="edge-vlm-2gb",
+         figs={5: ["gallery:small-model"], 6: ["gallery:ir"]},
          stat="2,810 → 1,755MB", stat_cap="PyTorch FP16 → llama.cpp Q8_0 · 낙상 AUROC 0.960", group="main", period="2026.10",
          label="개인 프로젝트 · 공개 데이터 · 코드 공개",
          summary="회사에서 남은 질문을 공개 데이터로 다시 풀었다. PyTorch FP16 2,810MB에서 "
@@ -120,6 +121,15 @@ strong { background:linear-gradient(transparent 62%, #fde68a 62%); font-weight:7
 .ibody h3 { margin:3px 0 8px; font-size:18px; line-height:1.45; }
 .ibody p { margin:8px 0; }
 figure { margin:14px 0; } figure img { margin:0 auto; border-radius:6px; cursor:zoom-in; }
+.gallery { margin:16px 0; padding:14px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+.gtitle { font-weight:700; font-size:14.5px; margin-bottom:10px; }
+.tiles { display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px; }
+.tile img { width:100%; aspect-ratio:248/360; object-fit:cover; margin:0; border-radius:6px; }
+.tcap { font-size:12.5px; line-height:1.5; margin-top:4px; color:#3b4352; }
+.tcap .tt { font-weight:700; color:var(--fg); }
+.yes { color:#c53030; } .no { color:#2f855a; }
+.gfoot { font-size:13px; color:#3b4352; margin:10px 0 2px; }
+.credit { font-size:11.5px; color:var(--muted); margin:2px 0 0; }
 details { margin-top:10px; font-size:14px; color:var(--muted); }
 summary { cursor:pointer; color:var(--accent); font-size:13.5px; user-select:none; }
 details p { margin:8px 0 0; padding:10px 12px; background:var(--bg-soft); border-radius:6px; line-height:1.65; }
@@ -207,8 +217,18 @@ def split_case(raw):
 
 
 def fig_html(names):
+    out = []
+    for n in names:
+        if n.startswith("gallery:"):
+            out.append((SRC / "galleries" / f"{n[8:]}.html").read_text(encoding="utf-8"))
+        else:
+            out.append(_fig(n))
+    return "".join(out)
+
+
+def _fig(n):
     return "".join(f'<figure><a href="/assets/img/{n}.png" target="_blank">'
-                   f'<img src="/assets/img/{n}.png" loading="lazy" alt="{n}"></a></figure>' for n in names)
+                   f'<img src="/assets/img/{n}.png" loading="lazy" alt="{n}"></a></figure>' for n in [n])
 
 
 def render_case(p):
