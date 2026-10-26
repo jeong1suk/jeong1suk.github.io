@@ -23,23 +23,30 @@ GITHUB = "https://github.com/jeong1suk"
 
 # 홈 카드 문구는 각 케이스 원고에 있는 사실만 옮긴다(새 수치를 만들지 않는다).
 PROJECTS = [
-    dict(slug="edge-deploy", group="main", period="2026.04",
+    dict(slug="edge-deploy",
+         figs={0: ["fig8_cascade"], 1: ["fig2_memory_budget"], 2: ["fig1_memory_timeline"], 3: ["fig5_score_separation"], 4: ["fig4_prompt_generations", "fig3_threshold_sweep"], 5: ["fig7_decode_refutation", "fig7b_splitting_lever"], 6: ["fig6_latency_trajectory"]},
+         stat="1.8초 → 300ms", stat_cap="VLM 2차 검증 지연 · 정확도는 떨어지지 않음(21장)", group="main", period="2026.04",
          label="회사 프로젝트 · 코드 비공개",
          summary="8GB 공유 메모리에 2차 검증기를 추가할 수 있는지 판정한 기록. "
                  "입력을 줄여 1.8초를 300ms로 만들었고, 재현율은 끝내 측정하지 못했다."),
-    dict(slug="edge-vlm-2gb", group="main", period="2026.10",
+    dict(slug="edge-vlm-2gb",
+         stat="2,810 → 1,755MB", stat_cap="PyTorch FP16 → llama.cpp Q8_0 · 낙상 AUROC 0.960", group="main", period="2026.10",
          label="개인 프로젝트 · 공개 데이터 · 코드 공개",
          summary="회사에서 남은 질문을 공개 데이터로 다시 풀었다. PyTorch FP16 2,810MB에서 "
                  "llama.cpp Q8_0 1,755MB로, 낙상 AUROC는 낮아지지 않았다(0.960)."),
-    dict(slug="vlm-serving", group="main", period="2026.10",
+    dict(slug="vlm-serving",
+         stat="25 → 95건/초", stat_cap="HF batch 1 → vLLM 연속 배칭 · 같은 GPU", group="main", period="2026.10",
          label="개인 프로젝트 · 공개 데이터",
          summary="2차 검증을 GPU 서버 한 대로 모으면 카메라 몇 대까지 감당하나. "
                  "처리량은 배칭이 바꿨고(초당 25건 → 95건), AWQ는 바꾸지 못했다."),
-    dict(slug="mlops-retrain", group="main", period="2026.02~05",
+    dict(slug="mlops-retrain",
+         figs={0: ["fig_mlops1_pipeline"], 4: ["fig_mlops2_states"], 6: ["fig_mlops3_threshold"]},
+         stat="구조 4회 전환", stat_cap="v0.1 직렬 → v2.0 배포 후 평가", group="main", period="2026.02~05",
          label="회사 프로젝트 · 코드 비공개",
          summary="설치 환경이 제각각인 카메라를 자동 재학습으로 따라가는 파이프라인. "
                  "구조를 네 번 갈아엎었고, 개선 폭은 측정하기 전에 중단됐다."),
-    dict(slug="fire-lora", group="more", period="2026.10",
+    dict(slug="fire-lora",
+         stat="88/88 오탐", stat_cap="처음 보는 카메라의 음성이 전부 Yes (3 epoch)", group="more", period="2026.10",
          label="개인 실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개",
          summary="VLM에 화재 LoRA를 붙인 실험. 13/13 복구가 암기였음을 홀드아웃으로 드러냈고, "
                  "처음 보는 음성에서는 전부 무너졌다."),
@@ -90,7 +97,51 @@ th, td { border:1px solid var(--line); padding:6px 9px; text-align:left; }
 ul.principles { padding-left:20px; color:#3b4352; }
 .back { font-size:14px; }
 footer.site { border-top:1px solid var(--line); color:var(--muted); font-size:13px; padding:20px 0 40px; }
-@media (max-width:600px) { h1, .hero h1 { font-size:24px; } body { font-size:15.5px; } }
+
+strong { background:linear-gradient(transparent 62%, #fde68a 62%); font-weight:700; }
+.card strong, .toc strong, h3 strong, header.site strong { background:none; }
+.tags { margin:6px 0 0; }
+.tag { display:inline-block; font-size:12px; color:#3b4352; background:#eef1f5; border-radius:999px;
+       padding:2px 9px; margin:0 6px 6px 0; }
+.statline { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin:18px 0 6px;
+            padding:14px 18px; background:var(--bg-soft); border-radius:8px; }
+.stat { font-size:26px; font-weight:800; color:var(--accent); letter-spacing:-0.5px; white-space:nowrap; }
+.cap { font-size:13.5px; color:var(--muted); }
+.toc { border:1px solid var(--line); border-radius:8px; padding:14px 18px 6px; margin:24px 0 32px; }
+.toc-h { font-weight:700; font-size:14px; color:var(--muted); margin-bottom:6px; }
+.toc ol { margin:0; padding-left:22px; }
+.toc li { margin:0 0 8px; font-size:15px; }
+.toc a { color:var(--fg); text-decoration:none; }
+.toc a:hover { color:var(--accent); }
+.item { display:flex; gap:16px; padding:22px 0; border-top:1px solid var(--line); scroll-margin-top:16px; }
+.num { flex:0 0 34px; height:34px; border-radius:50%; background:var(--accent); color:#fff;
+       font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px; }
+.ibody { flex:1; min-width:0; }
+.ibody h3 { margin:3px 0 8px; font-size:18px; line-height:1.45; }
+.ibody p { margin:8px 0; }
+figure { margin:14px 0; } figure img { margin:0 auto; border-radius:6px; cursor:zoom-in; }
+details { margin-top:10px; font-size:14px; color:var(--muted); }
+summary { cursor:pointer; color:var(--accent); font-size:13.5px; user-select:none; }
+details p { margin:8px 0 0; padding:10px 12px; background:var(--bg-soft); border-radius:6px; line-height:1.65; }
+.tailnote { border-top:1px solid var(--line); margin-top:8px; padding-top:14px; font-size:13.5px; color:var(--muted); }
+.intro > p > sub { display:block; padding:8px 12px; background:#f0f5fc; border-radius:6px; color:#2d3748; }
+.card { display:flex; gap:18px; align-items:stretch; }
+.cstat { flex:0 0 170px; border-right:1px solid var(--line); padding-right:14px; display:flex;
+         flex-direction:column; justify-content:center; }
+.cstat .stat { font-size:21px; white-space:normal; line-height:1.25; }
+.cstat .cap { margin-top:6px; font-size:12.5px; line-height:1.5; }
+.cmain { flex:1; min-width:0; }
+.flow { display:flex; align-items:stretch; gap:8px; margin:0 0 18px; }
+.flow .step { flex:1; background:var(--bg-soft); border-radius:8px; padding:10px 12px; font-size:14px; line-height:1.5; }
+.flow .who { display:block; font-size:12px; font-weight:700; color:var(--accent); margin-bottom:2px; }
+.flow .arrow { align-self:center; color:var(--muted); }
+@media (max-width:600px) {
+  h1, .hero h1 { font-size:24px; } body { font-size:15.5px; }
+  .card { flex-direction:column; gap:10px; }
+  .cstat { flex:none; border-right:none; border-bottom:1px solid var(--line); padding:0 0 10px; }
+  .flow { flex-direction:column; } .flow .arrow { transform:rotate(90deg); }
+  .item { gap:12px; } .num { flex-basis:28px; height:28px; font-size:13px; }
+}
 """
 
 
@@ -124,27 +175,88 @@ def strip_comments(text):
     return re.sub(r"<!--.*?-->\s*", "", text, flags=re.S)
 
 
-def render_case(p):
-    raw = strip_comments((SRC / "cases" / f"{p['slug']}.md").read_text(encoding="utf-8"))
+def md(text):
+    return markdown.markdown(text.strip(), extensions=["tables", "nl2br"])
+
+
+ITEM_RE = re.compile(r"^\*\*(\d+)\.\s*(.+?)\*\*[ \t]*\n(.*?)(?=^\*\*\d+\.|^---[ \t]*$|\Z)", re.M | re.S)
+
+
+def split_case(raw):
+    """카드 원고 → 제목 / 태그 / 도입부 / 항목 8개 / 꼬리말. 문장은 바꾸지 않는다."""
     m = re.search(r"^#\s+(.+)$", raw, flags=re.M)
     title = m.group(1).strip()
-    raw = raw[:m.start()] + raw[m.end():]
-    body_html = markdown.markdown(raw, extensions=["tables", "nl2br"])
-    body = (f'<p class="back"><a href="/#work">← 작업 목록</a></p>\n'
-            f'<article>\n<span class="badge">{html.escape(p["label"])}</span>\n'
-            f'<h1>{html.escape(title)}</h1>\n{body_html}\n</article>')
+    raw = raw[m.end():]
+    tags = []
+    h = re.search(r"^\*\*정원석\*\*\s*\|\s*(.+)$", raw, flags=re.M)
+    if h:
+        tags = [t.strip() for t in h.group(1).split(" · ") if t.strip()]
+        raw = raw[:h.start()] + raw[h.end():]
+    items = list(ITEM_RE.finditer(raw))
+    intro = raw[:items[0].start()]
+    intro = re.sub(r"^---[ \t]*$", "", intro, flags=re.M)
+    tail = raw[items[-1].end():]
+    tail = re.sub(r"^---[ \t]*$", "", tail, flags=re.M)
+    parsed = []
+    for it in items:
+        body = it.group(3)
+        subs = re.findall(r"<sub>(.*?)</sub>", body, flags=re.S)
+        body = re.sub(r"<sub>.*?</sub>", "", body, flags=re.S)
+        parsed.append(dict(n=it.group(1), head=it.group(2).strip(), body=body, notes=subs))
+    return title, tags, intro, parsed, tail
+
+
+def fig_html(names):
+    return "".join(f'<figure><a href="/assets/img/{n}.png" target="_blank">'
+                   f'<img src="/assets/img/{n}.png" loading="lazy" alt="{n}"></a></figure>' for n in names)
+
+
+def render_case(p):
+    raw = strip_comments((SRC / "cases" / f"{p['slug']}.md").read_text(encoding="utf-8"))
+    title, tags, intro, items, tail = split_case(raw)
+    tag_html = "".join(f'<span class="tag">{html.escape(t)}</span>' for t in tags)
+    toc = "\n".join(f'<li><a href="#s{i["n"]}">{md(i["head"])[3:-4]}</a></li>' for i in items)
+    blocks = []
+    for i in items:
+        notes = ""
+        if i["notes"]:
+            notes = ('<details><summary>측정 조건</summary>'
+                     + "".join(f"<p>{n.strip()}</p>" for n in i["notes"]) + "</details>")
+        blocks.append(f'<section class="item" id="s{i["n"]}"><div class="num">{i["n"]}</div>'
+                      f'<div class="ibody"><h3>{md(i["head"])[3:-4]}</h3>{md(i["body"])}'
+                      f'{fig_html(p.get("figs", {}).get(int(i["n"]), []))}{notes}</div></section>')
+    tail_html = md(tail.replace("<sub>", "").replace("</sub>", ""))
+    body = f"""<p class="back"><a href="/#work">← 작업 목록</a></p>
+<article>
+<span class="badge">{html.escape(p["label"])}</span>
+<h1>{html.escape(title)}</h1>
+<div class="tags">{tag_html}</div>
+<div class="statline"><span class="stat">{html.escape(p["stat"])}</span><span class="cap">{html.escape(p["stat_cap"])}</span></div>
+<div class="intro">{md(intro)}{fig_html(p.get("figs", {}).get(0, []))}</div>
+<nav class="toc"><div class="toc-h">한눈에 보기</div><ol>
+{toc}
+</ol></nav>
+{"".join(blocks)}
+<div class="tailnote">{tail_html}</div>
+</article>"""
     out = OUT_CASES / p["slug"] / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(page(f"{title} · 정원석", body, p["summary"]), encoding="utf-8")
     p["title"] = title
+    p["tags"] = tags
     return out
 
 
 def card(p):
+    tags = [t for t in p["tags"] if not re.match(r"^\d{4}\.", t) and t != "개인 프로젝트"][:4]
+    tag_html = "".join(f'<span class="tag">{html.escape(t)}</span>' for t in tags)
     return (f'<a class="card" href="/cases/{p["slug"]}/">'
-            f'<div class="meta">{p["period"]} · {html.escape(p["label"])}</div>'
+            f'<div class="cstat"><div class="stat">{html.escape(p["stat"])}</div>'
+            f'<div class="cap">{html.escape(p["stat_cap"])}</div></div>'
+            f'<div class="cmain"><div class="meta">{p["period"]} · {html.escape(p["label"])}</div>'
             f'<div class="title">{html.escape(p["title"])}</div>'
-            f'<p class="summary">{html.escape(p["summary"])}</p></a>')
+            f'<p class="summary">{html.escape(p["summary"])}</p>'
+            f'<div class="tags">{tag_html}</div></div></a>')
 
 
 def render_index():
@@ -166,6 +278,13 @@ def render_index():
 </ul>
 
 <h2 id="work">대표 작업</h2>
+<div class="flow">
+  <div class="step"><span class="who">회사</span>8GB 기기에 2차 검증기를 올릴 수 있나</div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="who">개인</span>2GB 안에서 상시로 돌리려면</div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="who">개인</span>서버로 모으면 카메라 몇 대까지</div>
+</div>
 <div class="cards">
 {main_cards}
 </div>

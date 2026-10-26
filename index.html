@@ -29,16 +29,23 @@
 </ul>
 
 <h2 id="work">대표 작업</h2>
+<div class="flow">
+  <div class="step"><span class="who">회사</span>8GB 기기에 2차 검증기를 올릴 수 있나</div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="who">개인</span>2GB 안에서 상시로 돌리려면</div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="who">개인</span>서버로 모으면 카메라 몇 대까지</div>
+</div>
 <div class="cards">
-<a class="card" href="/cases/edge-deploy/"><div class="meta">2026.04 · 회사 프로젝트 · 코드 비공개</div><div class="title">8GB 엣지 디바이스에 2차 검증기를 올리기까지</div><p class="summary">8GB 공유 메모리에 2차 검증기를 추가할 수 있는지 판정한 기록. 입력을 줄여 1.8초를 300ms로 만들었고, 재현율은 끝내 측정하지 못했다.</p></a>
-<a class="card" href="/cases/edge-vlm-2gb/"><div class="meta">2026.10 · 개인 프로젝트 · 공개 데이터 · 코드 공개</div><div class="title">엣지 VLM 검증기를 2GB 안에 넣기: 양자화보다 런타임이 먼저였다</div><p class="summary">회사에서 남은 질문을 공개 데이터로 다시 풀었다. PyTorch FP16 2,810MB에서 llama.cpp Q8_0 1,755MB로, 낙상 AUROC는 낮아지지 않았다(0.960).</p></a>
-<a class="card" href="/cases/vlm-serving/"><div class="meta">2026.10 · 개인 프로젝트 · 공개 데이터</div><div class="title">VLM 검증기를 중앙 서버로 모으면: 처리량을 바꾼 것은 양자화가 아니라 배칭이었다</div><p class="summary">2차 검증을 GPU 서버 한 대로 모으면 카메라 몇 대까지 감당하나. 처리량은 배칭이 바꿨고(초당 25건 → 95건), AWQ는 바꾸지 못했다.</p></a>
-<a class="card" href="/cases/mlops-retrain/"><div class="meta">2026.02~05 · 회사 프로젝트 · 코드 비공개</div><div class="title">설치 환경이 제각각인 카메라를 자동 재학습으로 따라가기</div><p class="summary">설치 환경이 제각각인 카메라를 자동 재학습으로 따라가는 파이프라인. 구조를 네 번 갈아엎었고, 개선 폭은 측정하기 전에 중단됐다.</p></a>
+<a class="card" href="/cases/edge-deploy/"><div class="cstat"><div class="stat">1.8초 → 300ms</div><div class="cap">VLM 2차 검증 지연 · 정확도는 떨어지지 않음(21장)</div></div><div class="cmain"><div class="meta">2026.04 · 회사 프로젝트 · 코드 비공개</div><div class="title">8GB 엣지 디바이스에 2차 검증기를 올리기까지</div><p class="summary">8GB 공유 메모리에 2차 검증기를 추가할 수 있는지 판정한 기록. 입력을 줄여 1.8초를 300ms로 만들었고, 재현율은 끝내 측정하지 못했다.</p><div class="tags"><span class="tag">Jetson Orin NX 8GB(UMA)</span><span class="tag">CLIP ViT-B/32 TensorRT INT8 ↔ SmolVLM</span><span class="tag">상용 AI 카메라 제품</span></div></div></a>
+<a class="card" href="/cases/edge-vlm-2gb/"><div class="cstat"><div class="stat">2,810 → 1,755MB</div><div class="cap">PyTorch FP16 → llama.cpp Q8_0 · 낙상 AUROC 0.960</div></div><div class="cmain"><div class="meta">2026.10 · 개인 프로젝트 · 공개 데이터 · 코드 공개</div><div class="title">엣지 VLM 검증기를 2GB 안에 넣기: 양자화보다 런타임이 먼저였다</div><p class="summary">회사에서 남은 질문을 공개 데이터로 다시 풀었다. PyTorch FP16 2,810MB에서 llama.cpp Q8_0 1,755MB로, 낙상 AUROC는 낮아지지 않았다(0.960).</p><div class="tags"><span class="tag">RTX 4070 SUPER(Jetson 미실측)</span><span class="tag">SmolVLM-500M</span><span class="tag">CAUCAFall 500장, D-Fire 854장</span></div></div></a>
+<a class="card" href="/cases/vlm-serving/"><div class="cstat"><div class="stat">25 → 95건/초</div><div class="cap">HF batch 1 → vLLM 연속 배칭 · 같은 GPU</div></div><div class="cmain"><div class="meta">2026.10 · 개인 프로젝트 · 공개 데이터</div><div class="title">VLM 검증기를 중앙 서버로 모으면: 처리량을 바꾼 것은 양자화가 아니라 배칭이었다</div><p class="summary">2차 검증을 GPU 서버 한 대로 모으면 카메라 몇 대까지 감당하나. 처리량은 배칭이 바꿨고(초당 25건 → 95건), AWQ는 바꾸지 못했다.</p><div class="tags"><span class="tag">RTX 4070 SUPER 12GB 1장</span><span class="tag">SmolVLM-500M</span><span class="tag">vLLM v0.32.0</span><span class="tag">minikube(GPU)</span></div></div></a>
+<a class="card" href="/cases/mlops-retrain/"><div class="cstat"><div class="stat">구조 4회 전환</div><div class="cap">v0.1 직렬 → v2.0 배포 후 평가</div></div><div class="cmain"><div class="meta">2026.02~05 · 회사 프로젝트 · 코드 비공개</div><div class="title">설치 환경이 제각각인 카메라를 자동 재학습으로 따라가기</div><p class="summary">설치 환경이 제각각인 카메라를 자동 재학습으로 따라가는 파이프라인. 구조를 네 번 갈아엎었고, 개선 폭은 측정하기 전에 중단됐다.</p><div class="tags"><span class="tag">온디바이스 검출기를 탑재한 상용 AI 카메라 + 로컬 GPU 서버</span><span class="tag">클라우드 미사용</span></div></div></a>
 </div>
 
 <h2>그 밖의 실험</h2>
 <div class="cards">
-<a class="card" href="/cases/fire-lora/"><div class="meta">2026.10 · 개인 실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개</div><div class="title">VLM에 화재를 보이게 한 실험, 그리고 실제로 배운 것</div><p class="summary">VLM에 화재 LoRA를 붙인 실험. 13/13 복구가 암기였음을 홀드아웃으로 드러냈고, 처음 보는 음성에서는 전부 무너졌다.</p></a>
+<a class="card" href="/cases/fire-lora/"><div class="cstat"><div class="stat">88/88 오탐</div><div class="cap">처음 보는 카메라의 음성이 전부 Yes (3 epoch)</div></div><div class="cmain"><div class="meta">2026.10 · 개인 실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개</div><div class="title">VLM에 화재를 보이게 한 실험, 그리고 실제로 배운 것</div><p class="summary">VLM에 화재 LoRA를 붙인 실험. 13/13 복구가 암기였음을 홀드아웃으로 드러냈고, 처음 보는 음성에서는 전부 무너졌다.</p><div class="tags"><span class="tag">RTX 4070 12GB</span><span class="tag">SmolVLM-500M-Instruct + LoRA(9.57M 파라미터)</span><span class="tag">372프레임(화재 172 / 야간 적외선 intrusion 200)</span></div></div></a>
 </div>
 
 </div></main>
