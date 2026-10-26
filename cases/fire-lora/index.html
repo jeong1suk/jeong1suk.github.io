@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VLM에 화재를 보이게 한 실험, 그리고 실제로 배운 것 · 정원석</title>
+<meta name="description" content="VLM에 화재 LoRA를 붙인 실험. 13/13 복구가 암기였음을 홀드아웃으로 드러냈고, 처음 보는 음성에서는 전부 무너졌다.">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a href="/"><strong>정원석</strong></a>
+  <nav><a href="/#work">작업</a><a href="https://github.com/jeong1suk">GitHub</a></nav>
+</div></header>
+<main><div class="wrap">
+<p class="back"><a href="/#work">← 작업 목록</a></p>
+<article>
+<span class="badge">개인 실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개</span>
+<h1>VLM에 화재를 보이게 한 실험, 그리고 실제로 배운 것</h1>
+<p><strong>정원석</strong> | 2026.10 · RTX 4070 12GB · SmolVLM-500M-Instruct + LoRA(9.57M 파라미터) · 372프레임(화재 172 / 야간 적외선 intrusion 200)</p>
+<blockquote>
+<p>낙상 판정에 쓰던 VLM에 도메인 LoRA를 적용해 화재 검출기로 써 보려는 기록.<br />
+<strong>기록의 중심은 13/13 복구가 아니라, 그 수치가 암기였다는 것이 드러났다가 진짜가 되는 순간, 그리고 음성 전체가 무너지는 순간이다.</strong></p>
+</blockquote>
+<hr />
+<p><strong>1. 1차본은 좋았다. 암기였다.</strong><br />
+첫 리포트는 "놓친 이벤트 26/26 복구"였다. 그 26개 이벤트는 학습 데이터에 들어 있었다. in-sample 수치가 generalization처럼 보였다.<br />
+<sub>1차 리포트는 그대로 두고, v2에서 하드 26개 이벤트를 13:13으로 나눠 13개를 학습에서 뺐다.</sub></p>
+<p><strong>2. base/LoRA 비교 자체가 거짓이었다.</strong><br />
+PeftModel 래핑이 base 모델을 in-place로 고쳤다. 같은 프로세스에서 측정한 "base" 점수와 LoRA 점수의 차이가 0.0000이었다. sanity check에서 발견했다.<br />
+<sub>모델을 따로 로딩해 재측정했다. Jetson Orin NX 기록 대비 재현성: 평균 절대 차이 0.0009, 최대 0.0037.</sub></p>
+<p><strong>3. 하드 이벤트를 13개 홀드아웃하고 복구를 쟀다.</strong><br />
+0/13이 13/13이 됐다. 프레임 점수 0.00~0.51이 0.82~1.00(최저 0.8152). 쉬운 8개 이벤트의 프레임 recall은 base 12/13에서 3ep 13/13으로 유지됐다.<br />
+<sub>하드 13이벤트/18프레임, base 최저 0.0031. 이벤트·카메라 독립성은 파일명 ID 기반 추론이며 메타데이터는 없다.</sub></p>
+<p><strong>4. 다만 테스트는 base 실패 사례로 고른 것이다.</strong><br />
+테스트의 하드 비율은 13/21(61.9%), 전체는 26/107(24.3%)다. "base가 놓친 것을 LoRA가 얼마나 복구하는가"는 조건부 평가이고, 운영 화재 분포의 성능으로 해석하지 않았다.<br />
+<sub>이 문장은 외부 리뷰어 지적 뒤에 넣었다. 처음엔 "실제로 일반화했다는 증거"라고 썼다.</sub></p>
+<p><strong>5. unseen 음성은 3ep에서 전부 터졌다.</strong><br />
+학습에 없던 카메라 1대의 88장(원본 11 + 증강 77)이 전부 "Yes"가 됐다. base 0.002~0.013이 0.93~1.00. 학습 음성은 1개 카메라 야간 IR 189장이었다. "이 도메인의 영상은 Yes"로 의심한다.<br />
+<sub>답변 토큰 마스킹이나 LoRA 적용 범위 같은 대조 실험으로 원인을 분리하지는 못했다. 확인된 원인은 아니다.</sub></p>
+<p><strong>6. 1ep도 안전하지는 않았다.</strong><br />
+음성 오탐 8/77, fall 검출 recall 92.3%에서 84.6%(미탐 1건 증가), 쉬운 화재 프레임 recall 12/13에서 11/13. epoch를 줄이면 오탐은 줄지만 복구도 13/13에서 3/13으로 떨어진다. 시험한 1/3 epoch, threshold 0.55에서는 둘 다 만족하는 지점이 없었다.<br />
+<sub>fall 회귀 25장 중 4장의 GT는 과거 모델 점수 ≥0.95 의사라벨. 오탐에는 영향 없고 recall에만 영향이 있다.</sub></p>
+<p><strong>7. threshold를 올려도 완전 분리는 못 했다.</strong><br />
+threshold 0.99997이면 이 테스트에서 오탐 0/88이지만 화재 검출은 12/21로 떨어진다. 오탐 억제는 검출 비용을 든다. 사후 분석이지 운영 임계값 채택 근거는 아니다.<br />
+<sub>3ep 음성 최고점 0.9999692. 두 분포 사이에 간격이 없다.</sub></p>
+<p><strong>8. 이 실험이 증명한 것은 평가셋의 위치다.</strong><br />
+평가셋에 unseen 음성을 넣은 것이 13/13 복구가 숨긴 과적합을 잡았다. 현재 구성에서 배포는 불가하고, 다음 단계는 음성 다양성 확충(낮, 실내, 연기, 조명)과 validation 기반 epoch 선택이다.<br />
+<sub>외부 LLM 리뷰 4라운드에서 수치를 독립 재계산으로 대조했고, 9건(프레임 수, 점수 범위, 집계 버그 포함)을 수정했다. 리뷰 기록은 함께 보관한다.</sub></p>
+<hr />
+<p><sub>상세판(4p) 별도 · 수치는 전부 측정 조건과 함께 보관 · 데이터는 회사 업무에서 TRT INT8 캘리브레이션에 쓰던 이미지라 공개하지 않는다</sub></p>
+</article>
+</div></main>
+<footer class="site"><div class="wrap">
+수치는 모두 측정 조건과 함께 적었습니다. 회사 프로젝트는 제품 구조·내부 경로·고객 정보를 빼고 정리했습니다.
+</div></footer>
+</body>
+</html>

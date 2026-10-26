@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8GB 엣지 디바이스에 2차 검증기를 올리기까지 · 정원석</title>
+<meta name="description" content="8GB 공유 메모리에 2차 검증기를 추가할 수 있는지 판정한 기록. 입력을 줄여 1.8초를 300ms로 만들었고, 재현율은 끝내 측정하지 못했다.">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a href="/"><strong>정원석</strong></a>
+  <nav><a href="/#work">작업</a><a href="https://github.com/jeong1suk">GitHub</a></nav>
+</div></header>
+<main><div class="wrap">
+<p class="back"><a href="/#work">← 작업 목록</a></p>
+<article>
+<span class="badge">회사 프로젝트 · 코드 비공개</span>
+<h1>8GB 엣지 디바이스에 2차 검증기를 올리기까지</h1>
+<p><strong>정원석</strong> | 2026.04 · Jetson Orin NX 8GB(UMA) · CLIP ViT-B/32 TensorRT INT8 ↔ SmolVLM · 상용 AI 카메라 제품</p>
+<blockquote>
+<p>1차 검출기가 이미 상주하는 8GB 공유 메모리에, 오탐을 걸러낼 2차 검증기를 추가할 수 있는지 판정한 기록.<br />
+<strong>고른 결과보다 고르는 절차를 만든 일</strong>이고, 아래 8개 중 6개가 실패·한계다.</p>
+</blockquote>
+<hr />
+<p><strong>1. 남은 예산이 얼마인지부터 몰랐다.</strong><br />
+그래서 모델을 고르기 전에 30분짜리 통제 시나리오 3개(1차만 / 엔진 로드만 / 추론까지)를 먼저 설계했다.<br />
+<sub>1초 간격 1,730~1,766 샘플 × 3회. 2차 검증기 고정비용 745MB = 두 시나리오 평균 사용량의 차이로 산출.</sub></p>
+<p><strong>2. 게이트를 측정 전에 정의했다 — 그리고 통과하지 못했다.</strong><br />
+P95 35ms · 여유 메모리 700MB를 설정 파일에 먼저 적었다. 추론 단독은 통과(P95 30ms)했지만, <strong>전송까지 포함하면 P95 168ms로 미달</strong>이었다.<br />
+<sub>end-to-end n=29. 리포트에는 PASS로만 적혀 있었다 — 나중에 로그를 다시 세면서 발견했다.</sub></p>
+<p><strong>3. 빠른 쪽이 태스크를 못 풀었다.</strong><br />
+25ms/745MB짜리 경량 엔진이 300ms짜리 VLM을 속도·메모리로 압도했지만, <strong>쓰러진 자세와 앉은 자세의 분리 마진이 0.02</strong> — 사실상 동전 던지기였다.<br />
+<sub>평가셋 21장(쓰러짐 9 / 정상 12). VLM은 같은 축에서 0.60.</sub></p>
+<p><strong>4. 프롬프트를 늘렸더니 오히려 나빠졌다.</strong><br />
+후보 문장을 2개에서 6개로 늘리자 쓰러짐 판정률이 <strong>31%에서 3%로</strong> 무너졌다. <strong>평균 벡터가 "어느 자세도 아닌 것"이 되어 있었다.</strong><br />
+<sub>판정률은 29장 crop 기준(같은 표본 비교). 별도로, 평균 대신 negative를 개별 벡터로 유지하고 best-negative 마진 게이트를 걸어 평가셋 21장에서 정확도 48%→90%, 오탐 11건→0건.</sub></p>
+<p><strong>5. 로짓 방식으로 바꿨더니 느려졌다 — 원인은 아직 모른다.</strong><br />
+1.8초에서 3.3초가 됐다. "버려지는 계산 때문"이라고 추정해 <strong>데스크톱 GPU에서 재현해봤는데 그 설명은 틀렸다</strong>(오히려 로짓이 1.4배 빨랐다).<br />
+<sub>같은 실험에서 이미지 분할이 지배적 비용임은 확인: 토큰 883→88, 지연 4배, 활성화 메모리 10배. 원 기기가 없어 원인은 미결로 둔다.</sub></p>
+<p><strong>6. 6배 빨라졌고, 정확도는 "오르지 않았다".</strong><br />
+입력을 줄여 1.8초 → 300ms가 됐다. 정확도는 20/21 → 21/21이었지만 <strong>21장에서 1장 차이라 "개선"이라고 쓰지 않는다.</strong> 말할 수 있는 건 "떨어지지 않았다"까지다.<br />
+<sub>재측정 P50 245ms / P99 273ms (warmup 5 제외).</sub></p>
+<p><strong>7. 틀린 1장은 해상도가 아니라 모델 크기 문제였다.</strong><br />
+그 1장은 "넘어지는 도중" 프레임이었고, 두 달 뒤 더 큰 모델로 바꾸니 해결됐다 — 작은 모델이 <strong>엎드린 자세만 낙상으로 보는 편향</strong>을 갖고 있었다.<br />
+<sub>25샘플 기준. 지연은 동일, 메모리는 532MB → 1,025MB(8GB의 13%).</sub></p>
+<p><strong>8. 재현율은 끝내 측정하지 못했다.</strong><br />
+트리거된 이벤트만 로그에 남기 때문에, 놓친 것을 셀 방법이 없었다. 라이브 트리거 334건에서는 오프라인에서 벌어졌던 점수 간격이 좁아졌지만, <strong>라벨이 없어 어느 단계가 나빠진 것인지는 끝까지 가리지 못했다.</strong><br />
+<sub>334건은 2차 검증기의 판정(사람 검수 아님)이고 shadow 모드라 알람을 막지는 않았다. 측정할 수 없는 지표를 측정한 것처럼 적지 않는 것이 이 기록의 기준이다.</sub></p>
+<hr />
+<p><sub>상세판(6p) 별도 · 수치는 전부 측정 조건과 함께 보관 · 제품 아키텍처·내부 경로·고객 정보는 포함하지 않음</sub></p>
+</article>
+</div></main>
+<footer class="site"><div class="wrap">
+수치는 모두 측정 조건과 함께 적었습니다. 회사 프로젝트는 제품 구조·내부 경로·고객 정보를 빼고 정리했습니다.
+</div></footer>
+</body>
+</html>
