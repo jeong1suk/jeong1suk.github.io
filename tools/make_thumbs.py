@@ -34,7 +34,22 @@ def collage(ids, name):
 
 
 OUT.mkdir(parents=True, exist_ok=True)
-fit(IMG / "fig6_latency_trajectory.png", "edge-deploy.jpg")
+# edge-deploy: 실제로 쓴 장비 사진(제조사 카탈로그에서 로고·제품명 없이 기기만 잘라냄) + 지연 그래프
+def device_and_chart(dev, chart, name):
+    bg = Image.new("RGB", (W, H), "white")
+    d = Image.open(dev).convert("RGB")
+    s = min(380 / d.width, 320 / d.height)
+    d = d.resize((int(d.width * s), int(d.height * s)), Image.LANCZOS)
+    bg.paste(d, (20 + (380 - d.width) // 2, (H - d.height) // 2))
+    c = Image.open(chart).convert("RGB")
+    c = c.crop(ImageChops.difference(c, Image.new("RGB", c.size, "white")).getbbox())
+    s = min(530 / c.width, 470 / c.height)
+    c = c.resize((int(c.width * s), int(c.height * s)), Image.LANCZOS)
+    bg.paste(c, (410 + (540 - c.width) // 2, (H - c.height) // 2))
+    bg.save(OUT / name, quality=92)
+
+
+device_and_chart(IMG / "device" / "edge_box.png", IMG / "fig6_latency_trajectory.png", "edge-deploy.jpg")
 collage(["fall_0403", "fall_0378", "fall_0317", "fall_0383"], "edge-vlm-2gb.jpg")
 fit(IMG / "vlm_serving_load_curve.png", "vlm-serving.jpg")
 fit(IMG / "fig_mlops1_pipeline.png", "mlops-retrain.jpg")

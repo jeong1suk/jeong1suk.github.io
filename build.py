@@ -120,7 +120,7 @@ CAREER = [
 ]
 
 # 썸네일이 실제 사진·화면인 카드(그래프가 아니라서 흑백 처리를 하지 않는다)
-REAL_THUMBS = {"edge-vlm-2gb", "onvif-rag"}
+REAL_THUMBS = {"edge-vlm-2gb", "onvif-rag", "edge-deploy"}
 
 HERO_STATS = [("1.8초 → 300ms", "Jetson 8GB, VLM 검증 지연"),
               ("2,810 → 1,755MB", "정확도 유지, 런타임 교체"),
