@@ -65,6 +65,12 @@ PROJECTS = [
          stat="0.074 → 0.894", stat_cap="자체 평가 9문항 충족률, 5회 평균",
          summary="ONVIF 표준 원문을 근거로 답하는 로컬 RAG. 원문은 코드로 뽑아 그대로 보여 주고 7B에게는 보조 설명만 맡겼다. "
                  "실제 질문 3개가 자체 평가보다 많은 버그를 잡았다."),
+    dict(slug="pm-requirements", group="learn", period="2026.06~09", accent="#475569",
+         kind="배우고 적용", label="회사 프로젝트 · 연동 조율 담당", notes_label="자세히",
+         hook="PM이 없는 회사에서 프로젝트끼리 어긋나면 누가 맞추나",
+         stat="WBS 38 · 요구사항 100건+", stat_cap="PMBOK 강의 → 헌장·WBS·요구사항",
+         summary="연동 조율이 안 돼 생긴 문제를 맡았다. PMP 35 PDU 강의를 코넬노트로 정리하며 배우고, "
+                 "헌장·WBS·검증 가능한 요구사항·미확정 표로 바로 적용했다."),
     dict(slug="fire-lora", group="exp", period="2026.10", accent="#ea580c",
          kind="실험", label="실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개",
          hook="13/13 복구는 암기였다",
@@ -83,6 +89,7 @@ DOMAINS = {
     "파인튜닝": "#db2777",
     "LLM 에이전트": "#0f766e",
     "RAG": "#be123c",
+    "PM·요구사항": "#475569",
 }
 DOMAINS_BY_SLUG = {
     "edge-deploy": ["VLM", "엣지 디바이스", "경량화·양자화"],
@@ -91,6 +98,7 @@ DOMAINS_BY_SLUG = {
     "mlops-retrain": ["MLOps", "엣지 디바이스", "경량화·양자화"],
     "senior-principles": ["LLM 에이전트"],
     "onvif-rag": ["RAG"],
+    "pm-requirements": ["PM·요구사항"],
     "fire-lora": ["VLM", "파인튜닝"],
 }
 
@@ -436,7 +444,7 @@ def render_case(p, nxt):
         i["body"] = mermaid_to_img(i["body"])
         notes = ""
         if i["notes"]:
-            notes = '<details><summary>측정 조건</summary>' + "".join(f"<p>{n.strip()}</p>" for n in i["notes"]) + "</details>"
+            notes = f'<details><summary>{p.get("notes_label", "측정 조건")}</summary>' + "".join(f"<p>{n.strip()}</p>" for n in i["notes"]) + "</details>"
         blocks.append(f'<section class="item" id="s{i["n"]}"><div class="num">{i["n"]}</div><div class="ibody">'
                       f'<h3>{inline(i["head"])}</h3>{re.sub(r"<p>FIGBLOCK:(.*?)</p>", lambda m: fig_html([m.group(1)]), md(i["body"]))}{fig_html(figs.get(i["n"], []))}{notes}</div></section>')
     tail_html = md(p["tail"].replace("<sub>", "").replace("</sub>", ""))
