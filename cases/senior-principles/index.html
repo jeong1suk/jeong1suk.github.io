@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI 코딩 에이전트에게 &quot;시니어의 판단&quot;을 가르치고, 그 효과를 측정하기 · 정원석</title>
-<meta name="description" content="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들고, 함정 시나리오 64종으로 평가했다. &quot;위반 0%&quot;는 수정 전 플러그인을 채점한 결과였다.">
+<meta name="description" content="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들어 사내에서 실제로 썼고, 함정 시나리오 64종으로 평가했다. &quot;위반 0%&quot;는 수정 전 플러그인을 채점한 결과였다.">
 <meta property="og:title" content="AI 코딩 에이전트에게 &quot;시니어의 판단&quot;을 가르치고, 그 효과를 측정하기 · 정원석">
-<meta property="og:description" content="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들고, 함정 시나리오 64종으로 평가했다. &quot;위반 0%&quot;는 수정 전 플러그인을 채점한 결과였다.">
+<meta property="og:description" content="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들어 사내에서 실제로 썼고, 함정 시나리오 64종으로 평가했다. &quot;위반 0%&quot;는 수정 전 플러그인을 채점한 결과였다.">
 <meta property="og:image" content="/assets/img/thumbs/edge-vlm-2gb.jpg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/assets/style.css">
@@ -25,7 +25,7 @@
 </div></div>
 <main style="--c:#0f766e"><div class="wrap narrow"><article>
 <div class="intro"><blockquote>
-<p><strong>Claude Code 플러그인 설계 및 평가 하네스 구축.</strong> 20일, 126커밋, 15개 버전.<br />
+<p><strong>Claude Code 플러그인 설계 및 평가 하네스 구축.</strong> AI 코딩 에이전트를 실무에서 잘 쓰기 위해 만들었고, 사내에 배포해 실제로 사용했다. 20일, 126커밋, 15개 버전.<br />
 가장 큰 개선은 원칙 문서가 아니라 <strong>측정 파이프라인의 결함을 찾았을 때</strong> 나왔고, 그때 이전 수치를 모두 철회했다.</p>
 </blockquote>
 <p><sub>정량 주장은 하지 않습니다. 채점은 모델이 했고, 시나리오마다 대부분 한 번만 실행했습니다(N=1).</sub></p></div>
@@ -36,7 +36,7 @@
 <li><a href="#s4">측정: "좋아진 것 같다"에서 끝내지 않기</a></li>
 <li><a href="#s5">가장 중요한 순간: 내 측정을 스스로 철회한 일</a></li>
 <li><a href="#s6">배운 점</a></li>
-<li><a href="#s7">관련 작업 (같은 시기, 사내 플러그인 마켓플레이스로 배포)</a></li>
+<li><a href="#s7">관련 작업 (같은 시기, 사내 플러그인 마켓플레이스로 배포·실사용)</a></li>
 </ol></nav>
 <section class="item" id="s1"><div class="num">1</div><div class="ibody"><h3>문제: 모델이 무엇을 할 수 있느냐보다, 어떻게 판단하느냐</h3><p>AI 코딩 에이전트를 실무에 쓰면서 반복되는 실패 패턴을 관찰했습니다.</p>
 <ul>
@@ -126,7 +126,7 @@
 <li><strong>LLM에게 주는 지시는 강제가 아니라 입력입니다.</strong> 강제가 필요하면 모델 바깥의 결정론적 메커니즘이 있어야 하고, 그것도 한계를 명시해야 합니다.</li>
 <li><strong>AI 행동 개선도 소프트웨어처럼</strong> 재현 가능한 실험, 독립 채점, 회귀 테스트로 다뤄야 합니다.</li>
 <li><strong>측정 도구 자체를 의심해야 합니다.</strong> 가장 큰 개선은 원칙 문서가 아니라 측정 파이프라인의 결함을 찾았을 때 나왔습니다.</li>
-</ol></div></section><section class="item" id="s7"><div class="num">7</div><div class="ibody"><h3>관련 작업 (같은 시기, 사내 플러그인 마켓플레이스로 배포)</h3><ul>
+</ol></div></section><section class="item" id="s7"><div class="num">7</div><div class="ibody"><h3>관련 작업 (같은 시기, 사내 플러그인 마켓플레이스로 배포·실사용)</h3><ul>
 <li><strong>컨텍스트 효율화:</strong> 언어 서버로 필요한 코드 위치만 조회하는 브리지, UI 전체 상태는 디스크에 보존하고 변경분만 전달하는 테스트 도구</li>
 <li><strong>AI용 지식 관리:</strong> 원본 자료는 변경 금지로 두고, AI가 관리하는 Markdown 위키 (MCP, 벡터 검색)</li>
 <li><strong>개발 프로세스:</strong> 스키마로 검증하는 명세 기반 개발, 반대 입장 검토로 설계 문서를 감사하는 방법론</li>
