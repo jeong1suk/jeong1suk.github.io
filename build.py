@@ -22,61 +22,56 @@ GITHUB = "https://github.com/jeong1suk"
 SITE_URL = "https://jeong1suk.github.io"
 
 # 홈 카드의 수치·요약은 각 케이스 원고에 있는 사실만 옮긴다(새 수치를 만들지 않는다).
-# hook = 카드 제목(궁금증을 만드는 질문). 원고 제목은 상세 페이지에서 쓴다.
+# name = 이력서·포트폴리오와 같은 프로젝트명(카드·상세 제목), result = 한 줄 결과. 원고 제목은 상세 페이지 부제로 쓴다.
 PROJECTS = [
-    dict(slug="edge-deploy", group="main", period="2026.04", accent="#4f46e5",
+    dict(slug="edge-deploy",
+         name='엣지 디바이스 2단계 이벤트 검증 파이프라인', result='Jetson 8GB, VLM 검증 지연 1.8초 → 300ms', group="main", period="2026.04", accent="#4f46e5",
          kind="회사 프로젝트", label="회사 프로젝트 · 코드 비공개",
-         hook="빠른 모델이 왜 탈락했나",
-         stat="1.8초 → 300ms", stat_cap="VLM 2차 검증 지연",
          summary="8GB 공유 메모리에 2차 검증기를 추가할 수 있는지 판정했다. "
                  "25ms짜리 경량 모델은 쓰러짐과 앉음을 0.02 차이로밖에 구분하지 못했다.",
          figs={0: ["fig8_cascade"], 1: ["fig2_memory_budget"], 2: ["fig1_memory_timeline"],
                3: ["fig5_score_separation"], 4: ["fig4_prompt_generations", "fig3_threshold_sweep"],
                5: ["fig7_decode_refutation", "fig7b_splitting_lever"], 6: ["fig6_latency_trajectory"]}),
-    dict(slug="edge-vlm-2gb", group="main", period="2026.10", accent="#0d9488",
+    dict(slug="edge-vlm-2gb",
+         name='엣지 VLM 검증기 2GB 경량화', result='2,810 → 1,755MB, 낙상 AUROC 0.960 유지', group="main", period="2026.10", accent="#0d9488",
          kind="업무 연장 연구", label="업무 연장 자체 연구 · 공개 데이터 · 코드 공개",
-         hook="4bit로 줄여도 안 들어갔다. 그럼 뭘 줄여야 하나",
-         stat="2,810 → 1,755MB", stat_cap="낙상 AUROC 0.960 유지",
          summary="회사에서 남은 질문을 공개 데이터로 다시 풀었다. 양자화보다 런타임 교체가 컸고, "
                  "오탐은 모델보다 흑백(IR) 영상에서 났다.",
          figs={5: ["gallery:small-model"], 6: ["gallery:ir"]}),
-    dict(slug="vlm-serving", group="main", period="2026.10", accent="#2563eb",
+    dict(slug="vlm-serving",
+         name='VLM 검증 서버 처리량 평가', result='같은 GPU에서 초당 25 → 95건', group="main", period="2026.10", accent="#2563eb",
          kind="업무 연장 연구", label="업무 연장 자체 연구 · 공개 데이터",
-         hook="GPU 한 장으로 카메라 몇 대까지 버티나",
-         stat="25 → 95건/초", stat_cap="같은 GPU, 배칭만 바꿔서",
          summary="2차 검증을 서버 한 대로 모았다. 처리량은 배칭이 바꿨고 AWQ는 바꾸지 못했다. "
                  "모델 교체는 61.5초 중단이었다."),
-    dict(slug="mlops-retrain", group="main", period="2026.02~05", accent="#7c3aed",
+    dict(slug="mlops-retrain",
+         name='카메라별 비전 모델 자동 재학습 파이프라인 (MLOps)', result='수집부터 SoC 배포·평가까지 단독, 구조 4회 전환', group="main", period="2026.02~05", accent="#7c3aed",
          kind="회사 프로젝트", label="회사 프로젝트 · 단독 설계·구현 · 코드 비공개",
-         hook="현장마다 다르게 틀리는 모델, 사람 없이 고칠 수 있나",
-         stat="구조 4회 전환", stat_cap="수집부터 배포·평가까지 단독",
          summary="카메라 환경별 자동 재학습 파이프라인. 구조를 네 번 갈아엎었고, "
                  "미탐률 이상의 원인은 모델이 아니라 펌웨어였다.",
          figs={0: ["fig_mlops1_pipeline"], 4: ["fig_mlops2_states"], 6: ["fig_mlops3_threshold"]}),
-    dict(slug="senior-principles", group="tools", period="2026.04~05", accent="#0f766e",
+    dict(slug="senior-principles",
+         name='AI 코딩 에이전트 판단 원칙 플러그인과 평가 하네스', result='"위반 0%"를 스스로 철회하고 재측정', group="tools", period="2026.04~05", accent="#0f766e",
          kind="사내 도구", label="회사 프로젝트 · 단독 개발 · 코드 비공개",
-         hook="AI 에이전트의 \"완료했습니다\"를 믿을 수 있나",
-         stat="이전 수치 철회", stat_cap="측정 파이프라인 결함을 스스로 발견",
          summary="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들어 카메라·VMS 연동 시스템 개발에 실제로 썼고, 함정 시나리오 64종으로 평가했다. "
                  "\"위반 0%\"는 수정 전 플러그인을 채점한 결과였다."),
-    dict(slug="onvif-rag", group="tools", period="2026.06~10", accent="#be123c",
+    dict(slug="onvif-rag",
+         name='ONVIF 표준 조사와 표준 문서 RAG 챗봇', result='로컬 7B, 자체 평가 9문항 0.074 → 0.894', group="tools", period="2026.06~10", accent="#be123c",
          kind="사내 도구", label="회사 프로젝트 · 단독 개발 · 코드 비공개",
-         hook="7B 모델로 표준 문서 질문에 답할 수 있나",
-         stat="0.074 → 0.894", stat_cap="자체 평가 9문항 충족률, 5회 평균",
          summary="ONVIF 표준 원문을 근거로 답하는 로컬 RAG. 원문은 코드로 뽑아 그대로 보여 주고 7B에게는 보조 설명만 맡겼다. "
-                 "실제 질문 3개가 자체 평가보다 많은 버그를 잡았다."),
-    dict(slug="pm-requirements", group="learn", period="2026.06~09", accent="#475569",
+                 "실제 질문 3개가 자체 평가보다 많은 버그를 잡았다.",
+         figs={4: ["onvif_rag_score"]}),
+    dict(slug="pm-requirements",
+         name='프로젝트 간 연동 조율 (PM 부재)', result='PMBOK 학습 → 헌장 · WBS 38 · 요구사항 100건+', group="learn", period="2026.06~09", accent="#475569",
          kind="배우고 적용", label="회사 프로젝트 · 연동 조율 담당", notes_label="자세히",
-         hook="PM이 없는 회사에서 프로젝트끼리 어긋나면 누가 맞추나",
-         stat="WBS 38 · 요구사항 100건+", stat_cap="PMBOK 강의 → 헌장·WBS·요구사항",
          summary="연동 조율이 안 돼 생긴 문제를 맡았다. PMP 35 PDU 강의를 코넬노트로 정리하며 배우고, "
-                 "헌장·WBS·검증 가능한 요구사항·미확정 표로 바로 적용했다."),
-    dict(slug="fire-lora", group="exp", period="2026.10", accent="#ea580c",
+                 "헌장·WBS·검증 가능한 요구사항·미확정 표로 바로 적용했다.",
+         figs={0: ["pm_flow"], 6: ["pm_open_items"]}),
+    dict(slug="fire-lora",
+         name='VLM 도메인 적응 평가 (화재 LoRA)', result='13/13 복구가 암기였음을 홀드아웃으로 확인', group="exp", period="2026.10", accent="#ea580c",
          kind="실험", label="실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개",
-         hook="13/13 복구는 암기였다",
-         stat="88/88 오탐", stat_cap="처음 보는 카메라의 정상 장면",
          summary="VLM에 화재 LoRA를 붙였다. 홀드아웃으로 암기를 걸러냈더니, "
-                 "처음 보는 카메라에서는 정상 장면이 전부 화재가 됐다."),
+                 "처음 보는 카메라에서는 정상 장면이 전부 화재가 됐다.",
+         figs={5: ["fire_lora_tradeoff"]}),
 ]
 
 # 기술 분야 태그 (필터·카드·상세 페이지 공통). 색은 분야별 고정.
@@ -107,25 +102,18 @@ def domain_chips(slug, cls="dchip"):
     return "".join(f'<span class="{cls}" style="--d:{DOMAINS[d]}">{html.escape(d)}</span>' for d in DOMAINS_BY_SLUG[slug])
 
 
-FILTER_JS = """<script>
-document.querySelectorAll(".fbtn").forEach(function (b) {
-  b.addEventListener("click", function () {
-    var f = b.dataset.f;
-    document.querySelectorAll(".fbtn").forEach(function (x) { x.classList.toggle("on", x === b); });
-    document.querySelectorAll(".card").forEach(function (c) {
-      c.style.display = (!f || c.dataset.domains.split("|").indexOf(f) >= 0) ? "" : "none";
-    });
-    document.querySelectorAll("section.block").forEach(function (sec) {
-      var cards = sec.querySelectorAll(".card");
-      if (!cards.length) return;
-      var any = Array.prototype.some.call(cards, function (c) { return c.style.display !== "none"; });
-      sec.style.display = any ? "" : "none";
-    });
-    var flow = document.querySelector(".flow");
-    if (flow) flow.style.display = f ? "none" : "";
-  });
-});
-</script>"""
+EMAIL = "ssukgoon@gmail.com"
+LINKEDIN = ""  # 링크드인 주소를 넣으면 버튼이 나타난다
+
+# 이력서(잡코리아)와 같은 사실만. 현 직장은 공개 사이트라 회사명 대신 업종으로 적는다.
+CAREER = [
+    ("2026.01 ~ 현재", "엣지 AI 카메라 기업", "AI 엔지니어 · VLM 검증, MLOps, 사내 AI 도구"),
+    ("2025.09 ~ 2026.01", "서울시 미래청년 일자리", "백엔드 개발 · STO 경매 서비스"),
+    ("2025.04 ~ 2025.08", "스플랩", "데이터 리서처 · OCR 정보 추출, 수집 자동화"),
+    ("2024.10", "NIPA-Google ML 부트캠프 해커톤", "대상"),
+    ("2024.07", "정보처리기사", ""),
+    ("2019.03 ~ 2023.02", "세종대학교", "무인이동체공학과 졸업"),
+]
 
 HERO_STATS = [("1.8초 → 300ms", "Jetson 8GB, VLM 검증 지연"),
               ("2,810 → 1,755MB", "정확도 유지, 런타임 교체"),
@@ -173,17 +161,27 @@ header.site nav a { margin-left:22px; opacity:.8; } header.site nav a:hover { op
 .hero { background:radial-gradient(1200px 500px at 15% -10%, #3730a3 0%, transparent 60%),
                    radial-gradient(900px 500px at 100% 0%, #0e7490 0%, transparent 55%), var(--dark);
         color:#fff; padding:84px 0 72px; }
+.hero-grid { display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:44px; align-items:start; }
+.hname { font-size:20px; font-weight:800; margin:0 0 10px; color:#fff; } .hname span { font-size:15px; font-weight:600; color:#94a3b8; margin-left:6px; }
+.career { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:18px 20px; margin-top:8px; }
+.career .ch { font-size:12px; font-weight:800; letter-spacing:.6px; color:#a5b4fc; margin-bottom:8px; }
+.career ul { list-style:none; margin:0; padding:0; }
+.career li { display:flex; flex-direction:column; padding:9px 0; border-top:1px solid rgba(255,255,255,.08); }
+.career li:first-child { border-top:0; padding-top:2px; }
+.career .cd { font-size:12px; color:#94a3b8; font-variant-numeric:tabular-nums; }
+.career .co b { font-size:14.5px; color:#fff; } .career .co span { display:block; font-size:13px; color:#cbd5e1; }
 .hero .eyebrow { color:#a5b4fc; font-weight:700; font-size:14px; letter-spacing:.5px; margin:0 0 14px; }
-.hero h1 { font-size:44px; line-height:1.25; margin:0 0 18px; letter-spacing:-1px; font-weight:800; max-width:820px; }
+.hero h1 { font-size:40px; line-height:1.25; margin:0 0 18px; letter-spacing:-1px; font-weight:800; max-width:820px; }
 .hero h1 em { font-style:normal; background:linear-gradient(90deg,#a5b4fc,#67e8f9); -webkit-background-clip:text; background-clip:text; color:transparent; }
 .hero .lead { font-size:18px; color:#cbd5e1; max-width:680px; margin:0 0 34px; }
 .hstats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:0 0 34px; }
-.hstat { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:18px 20px; }
-.hstat .n { font-size:28px; font-weight:800; letter-spacing:-.5px; color:#fff; white-space:nowrap; }
+.hstat { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:14px 16px; }
+.hstat .n { font-size:21px; font-weight:800; letter-spacing:-.5px; color:#fff; white-space:nowrap; }
 .hstat .c { font-size:13.5px; color:#94a3b8; margin-top:2px; }
 .btns a { display:inline-block; padding:12px 22px; border-radius:999px; font-weight:700; font-size:15px;
           text-decoration:none; margin:0 10px 10px 0; transition:transform .15s; }
 .btns a:hover { transform:translateY(-2px); }
+.em-s { display:none; }
 .btn-primary { background:#fff; color:var(--dark); }
 .btn-ghost { border:1px solid rgba(255,255,255,.35); color:#fff; }
 
@@ -207,19 +205,14 @@ section.block { padding:72px 0 8px; }
 .thumb { position:relative; aspect-ratio:16/9; background:var(--c); overflow:hidden; }
 .thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s; }
 .card:hover .thumb img { transform:scale(1.04); }
-.thumb::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 35%, rgba(2,6,23,.82) 100%); }
-.thumb.graph { background:var(--c); }
-.thumb.graph img { filter:grayscale(1) contrast(1.15); mix-blend-mode:multiply; }
-.thumb.graph::after { background:linear-gradient(180deg, transparent 30%, rgba(2,6,23,.75) 100%); }
+.thumb.graph { background:color-mix(in srgb, var(--c) 9%, #fff); }
+.thumb.graph img { filter:grayscale(1) contrast(1.1); mix-blend-mode:multiply; object-fit:contain; padding:10px; }
 .thumb.noimg { background:linear-gradient(135deg, var(--c), #0b1020); }
-.thumb.noimg::after { background:none; }
-.thumb .kind { position:absolute; top:14px; left:14px; z-index:2; background:rgba(255,255,255,.92); color:var(--c);
+.thumb .kind { position:absolute; top:12px; left:12px; z-index:2; background:rgba(255,255,255,.95); box-shadow:0 1px 3px rgba(15,23,42,.2); color:var(--c);
                font-size:12px; font-weight:800; padding:3px 10px; border-radius:999px; }
-.thumb .st { position:absolute; left:18px; bottom:14px; z-index:2; color:#fff; }
-.thumb .st .n { font-size:30px; font-weight:800; letter-spacing:-.6px; line-height:1.15; }
-.thumb .st .c { font-size:13px; opacity:.85; }
 .cbody { padding:18px 20px 20px; display:flex; flex-direction:column; flex:1; }
-.cbody .hook { font-size:20px; font-weight:800; letter-spacing:-.4px; line-height:1.4; margin:0 0 8px; }
+.cbody .ttl { font-size:19px; font-weight:800; letter-spacing:-.4px; line-height:1.4; margin:0 0 4px; }
+.cbody .res { font-size:15px; font-weight:800; color:var(--c); margin:0 0 8px; }
 .cbody .sum { color:#475569; font-size:15px; margin:0 0 14px; flex:1; }
 .cbody .foot { display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--muted); }
 .cbody .go { color:var(--c); font-weight:800; font-size:14px; }
@@ -228,13 +221,6 @@ section.block { padding:72px 0 8px; }
 .card.wide .cbody { width:58%; }
 
 /* domains */
-.filters { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 18px; }
-.fbtn { font:inherit; font-size:14px; font-weight:700; cursor:pointer; border:1px solid var(--line); background:#fff;
-        color:#334155; border-radius:999px; padding:7px 14px; transition:all .15s; }
-.fbtn b { font-weight:800; opacity:.55; margin-left:2px; }
-.fbtn:hover { border-color:var(--d, var(--fg)); color:var(--d, var(--fg)); }
-.fbtn.on { background:var(--d, var(--fg)); border-color:var(--d, var(--fg)); color:#fff; }
-.fbtn.on b { opacity:.8; }
 .dchips { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px; }
 .dchip { font-size:12px; font-weight:800; color:var(--d); background:color-mix(in srgb, var(--d) 10%, #fff);
          border:1px solid color-mix(in srgb, var(--d) 28%, #fff); border-radius:6px; padding:2px 8px; }
@@ -264,9 +250,8 @@ footer.site { color:var(--muted); font-size:13px; padding:22px 0 40px; }
 .chero .badge { display:inline-block; margin:18px 0 10px; font-size:12.5px; font-weight:700; background:rgba(255,255,255,.15);
                 border:1px solid rgba(255,255,255,.25); padding:3px 10px; border-radius:999px; }
 .chero h1 { font-size:34px; line-height:1.3; letter-spacing:-.8px; margin:0 0 14px; font-weight:800; }
-.chero .st { display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; margin:0 0 14px; }
-.chero .st .n { font-size:30px; font-weight:800; }
-.chero .st .c { color:#cbd5e1; font-size:14px; }
+.chero .sub { font-size:17px; color:#cbd5e1; margin:0 0 12px; line-height:1.5; }
+.chero .res { font-size:20px; font-weight:800; margin:0 0 14px; }
 .tags { margin:4px 0 0; }
 .tag { display:inline-block; font-size:12px; border-radius:999px; padding:2px 10px; margin:0 6px 6px 0;
        background:rgba(255,255,255,.12); color:#e2e8f0; border:1px solid rgba(255,255,255,.18); }
@@ -276,7 +261,7 @@ blockquote { margin:0 0 20px; padding:14px 18px; border-left:4px solid var(--c);
 blockquote p { margin:6px 0; }
 .intro > p > sub { display:block; padding:10px 14px; background:#eef2ff; border-radius:10px; color:#334155; font-size:14px; }
 strong { background:linear-gradient(transparent 62%, #fde68a 62%); font-weight:700; }
-.toc strong, h3 strong, .hook strong { background:none; }
+.toc strong, h3 strong { background:none; }
 .toc { border:1px solid var(--line); border-radius:14px; padding:16px 20px 8px; margin:26px 0 30px; background:#fff; }
 .toc-h { font-weight:800; font-size:13px; color:var(--muted); margin-bottom:6px; letter-spacing:.3px; }
 .toc ol { margin:0; padding-left:22px; } .toc li { margin:0 0 8px; font-size:15px; }
@@ -312,7 +297,14 @@ details p { margin:8px 0 0; padding:10px 12px; background:var(--soft); border-ra
 .credit { font-size:11.5px; color:var(--muted); margin:2px 0 0; } .credit a { color:var(--muted); }
 
 @media (max-width:760px) {
-  .hero { padding:56px 0 48px; } .hero h1 { font-size:30px; } .hero .lead { font-size:16px; }
+  .hero { padding:28px 0 26px; } .hero h1 { font-size:23px; letter-spacing:-.5px; margin:0 0 14px; } .hero .lead, .hstats { display:none; }
+  .hero .eyebrow { font-size:12px; margin:0 0 8px; } .hname { font-size:18px; margin:0 0 6px; }
+  .hero-grid { grid-template-columns:1fr; gap:14px; }
+  .btns a { padding:8px 14px; font-size:13.5px; margin:0 6px 8px 0; }
+  .career { padding:10px 14px; margin:0; } .career .ch { display:none; }
+  .career li { flex-direction:row; gap:10px; padding:4px 0; align-items:baseline; border-top:0; }
+  .career .cd { flex:0 0 112px; font-size:11.5px; } .career .co b { font-size:13px; } .career .co span { display:none; }
+  section.block { padding:44px 0 4px; } .flow { display:none; } .em-l { display:none; } .em-s { display:inline; }
   .habits, .grid { grid-template-columns:1fr; }
   .hstats { grid-template-columns:1fr; gap:8px; } .hstat { padding:12px 16px; display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
   .hstat .n { font-size:20px; } .hstat .c { font-size:12px; text-align:right; margin:0; }
@@ -452,8 +444,9 @@ def render_case(p, nxt):
 <a class="back" href="/#work">← 전체 작업</a><br>
 <div class="dchips hero-d">{domain_chips(p["slug"])}</div>
 <span class="badge">{html.escape(p['label'])}</span>
-<h1>{html.escape(p['title'])}</h1>
-<div class="st"><span class="n">{html.escape(p['stat'])}</span><span class="c">{html.escape(p['stat_cap'])}</span></div>
+<h1>{html.escape(p['name'])}</h1>
+<p class="sub">{html.escape(p['title'])}</p>
+<div class="res">{html.escape(p['result'])}</div>
 <div class="tags">{tag_html}</div>
 </div></div>
 <main style="--c:{p['accent']}"><div class="wrap narrow"><article>
@@ -464,22 +457,21 @@ def render_case(p, nxt):
 {"".join(blocks)}
 <div class="tailnote">{tail_html}</div>
 </article>
-<a class="next" style="--nc:{nxt['accent']}" href="/cases/{nxt['slug']}/"><div class="l">다음 작업 →</div><div class="t">{html.escape(nxt['hook'])}</div></a>
+<a class="next" style="--nc:{nxt['accent']}" href="/cases/{nxt['slug']}/"><div class="l">다음 작업 →</div><div class="t">{html.escape(nxt['name'])}</div></a>
 </div></main>"""
     out = OUT_CASES / p["slug"] / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(page(f"{p['title']} · 정원석", body, p["summary"]), encoding="utf-8")
+    out.write_text(page(f"{p['name']} · 정원석", body, p["summary"]), encoding="utf-8")
     return out
 
 
 def card(p, wide=False):
     thumb = ROOT / "assets" / "img" / "thumbs" / f"{p['slug']}.jpg"
     img = f'<img src="/assets/img/thumbs/{p["slug"]}.jpg" alt="" loading="lazy">' if thumb.exists() else ""
-    doms = "|".join(DOMAINS_BY_SLUG[p["slug"]])
-    return (f'<a class="card{" wide" if wide else ""}" data-domains="{html.escape(doms)}" style="--c:{p["accent"]}" href="/cases/{p["slug"]}/">'
-            f'<div class="thumb{" graph" if img and p["slug"] != "edge-vlm-2gb" else ""}{"" if img else " noimg"}">{img}<span class="kind">{html.escape(p["kind"])}</span>'
-            f'<div class="st"><div class="n">{html.escape(p["stat"])}</div><div class="c">{html.escape(p["stat_cap"])}</div></div></div>'
-            f'<div class="cbody"><div class="dchips">{domain_chips(p["slug"])}</div><div class="hook">{html.escape(p["hook"])}</div>'
+    return (f'<a class="card{" wide" if wide else ""}" style="--c:{p["accent"]}" href="/cases/{p["slug"]}/">'
+            f'<div class="thumb{" graph" if img and p["slug"] != "edge-vlm-2gb" else ""}{"" if img else " noimg"}">{img}<span class="kind">{html.escape(p["kind"])}</span></div>'
+            f'<div class="cbody"><div class="dchips">{domain_chips(p["slug"])}</div><div class="ttl">{html.escape(p["name"])}</div>'
+            f'<div class="res">{html.escape(p["result"])}</div>'
             f'<p class="sum">{html.escape(p["summary"])}</p>'
             f'<div class="foot"><span>{p["period"]} · {html.escape(p["label"].split(" · ")[1] if " · " in p["label"] else "")}</span>'
             f'<span class="go">읽기 →</span></div></div></a>')
@@ -492,7 +484,7 @@ def render_index():
     main_cards = "\n".join(card(p) for p in PROJECTS if p["group"] == "main")
     exp_cards = "\n".join(card(p, wide=True) for p in PROJECTS if p["group"] == "exp")
     tool_cards = "\n".join(card(p) for p in PROJECTS if p["group"] == "tools")
-    learn_cards = "\n".join(card(p) for p in PROJECTS if p["group"] == "learn")
+    learn_cards = "\n".join(card(p, wide=True) for p in PROJECTS if p["group"] == "learn")
     learn_sec = (f"""<section class="block" id="learn"><div class="wrap">
 <h2 class="sec-h">배우고 바로 적용한 것</h2>
 <p class="sec-sub">맡은 일을 잘하려고 따로 공부했고, 배운 것은 그 프로젝트에 바로 썼습니다.</p>
@@ -500,29 +492,32 @@ def render_index():
 </div></section>""" if learn_cards else "")
     habits = "".join(
         f'<a class="habit" href="/cases/{slug}/#s{n}"><div class="no">0{k+1}</div><h3>{html.escape(h)}</h3>'
-        f'<p>{html.escape(t)}</p><div class="src">{html.escape(by[slug]["hook"])} · {n}번 →</div></a>'
+        f'<p>{html.escape(t)}</p><div class="src">{html.escape(by[slug]["name"])} · {n}번 →</div></a>'
         for k, (h, t, slug, n) in enumerate(HABITS))
-    counts = {d: sum(d in v for v in DOMAINS_BY_SLUG.values()) for d in DOMAINS}
-    filters = '<button class="fbtn on" data-f="">전체 <b>%d</b></button>' % len(PROJECTS) + "".join(
-        f'<button class="fbtn" data-f="{html.escape(d)}" style="--d:{c}">{html.escape(d)} <b>{counts[d]}</b></button>'
-        for d, c in DOMAINS.items() if counts[d])
     flow = "".join([
         f'<a href="/cases/edge-deploy/"><span class="who">회사</span>8GB 기기에 2차 검증기를 올릴 수 있나</a><span class="arr">→</span>',
         f'<a href="/cases/edge-vlm-2gb/"><span class="who">업무 연장 연구</span>2GB 안에서 상시로 돌리려면</a><span class="arr">→</span>',
         f'<a href="/cases/vlm-serving/"><span class="who">업무 연장 연구</span>서버로 모으면 카메라 몇 대까지</a>'])
-    body = f"""<section class="hero"><div class="wrap">
+    career = "".join(f'<li><span class="cd">{html.escape(d)}</span><span class="co"><b>{html.escape(o)}</b>'
+                     f'{"<span>" + html.escape(r) + "</span>" if r else ""}</span></li>' for d, o, r in CAREER)
+    contact = (f'<a class="btn-ghost" href="mailto:{EMAIL}">✉ <span class="em-l">{EMAIL}</span><span class="em-s">이메일</span></a>'
+               f'<a class="btn-ghost" href="{GITHUB}">GitHub</a>'
+               + (f'<a class="btn-ghost" href="{LINKEDIN}">LinkedIn</a>' if LINKEDIN else ""))
+    body = f"""<section class="hero"><div class="wrap hero-grid"><div class="hero-main">
 <p class="eyebrow">VISION · VLM · EDGE AI ENGINEER</p>
+<p class="hname">정원석 <span>AI 엔지니어</span></p>
 <h1>모델이 현장에서 <em>왜 틀리는지</em> 찾아내고,<br>제한된 장비에서 돌아가게 만듭니다</h1>
 <p class="lead">오프라인에서 좋아 보이던 모델이 실제 환경에서 무너지는 지점을 측정으로 찾고,
 프롬프트·입력·모델·런타임을 바꿔 되돌립니다.</p>
 <div class="hstats">{stats}</div>
-<div class="btns"><a class="btn-primary" href="#work">작업 보기</a><a class="btn-ghost" href="{GITHUB}">GitHub</a></div>
+<div class="btns"><a class="btn-primary" href="#work">작업 보기</a>{contact}</div>
+</div>
+<aside class="career"><div class="ch">이력</div><ul>{career}</ul></aside>
 </div></section>
 
 <section class="block" id="work"><div class="wrap">
 <h2 class="sec-h">대표 작업</h2>
 <p class="sec-sub">회사에서 남은 질문을 직접 이어서 풀었습니다. 카드를 누르면 과정과 실패까지 볼 수 있습니다.</p>
-<div class="filters" role="group" aria-label="기술 분야 필터">{filters}</div>
 <div class="flow">{flow}</div>
 <div class="grid">
 {main_cards}
@@ -549,7 +544,6 @@ def render_index():
 <div class="habits">{habits}</div>
 </div></section>
 
-{FILTER_JS}
 <section class="band"><div class="wrap">
 <h2>코드와 판단 기록은 GitHub에 있습니다</h2>
 <p>공개 데이터로 다시 푼 연구는 실험 스크립트와 결정 기록까지 공개했습니다.</p>

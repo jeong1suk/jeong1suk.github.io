@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """홈 카드용 16:9 썸네일. 그래프는 흰 배경에 여백을 두고 넣고, 2GB는 CAUCAFall 실제 사진 콜라주."""
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageChops
 
 SITE = Path(__file__).resolve().parent.parent
 IMG = SITE / "assets" / "img"
@@ -11,6 +11,9 @@ W, H = 960, 540
 
 def fit(src, name, pad=24):
     im = Image.open(src).convert("RGB")
+    box = ImageChops.difference(im, Image.new("RGB", im.size, "white")).getbbox()
+    if box:
+        im = im.crop((max(box[0] - 10, 0), max(box[1] - 10, 0), min(box[2] + 10, im.width), min(box[3] + 10, im.height)))
     im.thumbnail((W - 2 * pad, H - 2 * pad), Image.LANCZOS)
     bg = Image.new("RGB", (W, H), "white")
     bg.paste(im, ((W - im.width) // 2, (H - im.height) // 2))
@@ -35,4 +38,8 @@ fit(IMG / "fig6_latency_trajectory.png", "edge-deploy.jpg")
 collage(["fall_0403", "fall_0378", "fall_0317", "fall_0383"], "edge-vlm-2gb.jpg")
 fit(IMG / "vlm_serving_load_curve.png", "vlm-serving.jpg")
 fit(IMG / "fig_mlops1_pipeline.png", "mlops-retrain.jpg")
+fit(IMG / "diagrams" / "senior-principles_2.png", "senior-principles.jpg")
+fit(IMG / "onvif_rag_score.png", "onvif-rag.jpg")
+fit(IMG / "fire_lora_tradeoff.png", "fire-lora.jpg")
+fit(IMG / "pm_flow.png", "pm-requirements.jpg")
 print(sorted(p.name for p in OUT.iterdir()))

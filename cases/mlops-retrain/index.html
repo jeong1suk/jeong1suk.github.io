@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>설치 환경이 제각각인 카메라를 자동 재학습으로 따라가기 · 정원석</title>
+<title>카메라별 비전 모델 자동 재학습 파이프라인 (MLOps) · 정원석</title>
 <meta name="description" content="카메라 환경별 자동 재학습 파이프라인. 구조를 네 번 갈아엎었고, 미탐률 이상의 원인은 모델이 아니라 펌웨어였다.">
-<meta property="og:title" content="설치 환경이 제각각인 카메라를 자동 재학습으로 따라가기 · 정원석">
+<meta property="og:title" content="카메라별 비전 모델 자동 재학습 파이프라인 (MLOps) · 정원석">
 <meta property="og:description" content="카메라 환경별 자동 재학습 파이프라인. 구조를 네 번 갈아엎었고, 미탐률 이상의 원인은 모델이 아니라 펌웨어였다.">
 <meta property="og:image" content="https://jeong1suk.github.io/assets/img/thumbs/edge-vlm-2gb.jpg">
 <meta property="og:type" content="website">
@@ -23,8 +23,9 @@
 <a class="back" href="/#work">← 전체 작업</a><br>
 <div class="dchips hero-d"><span class="dchip" style="--d:#7c3aed">MLOps</span><span class="dchip" style="--d:#0d9488">엣지 디바이스</span><span class="dchip" style="--d:#b45309">경량화·양자화</span></div>
 <span class="badge">회사 프로젝트 · 단독 설계·구현 · 코드 비공개</span>
-<h1>설치 환경이 제각각인 카메라를 자동 재학습으로 따라가기</h1>
-<div class="st"><span class="n">구조 4회 전환</span><span class="c">수집부터 배포·평가까지 단독</span></div>
+<h1>카메라별 비전 모델 자동 재학습 파이프라인 (MLOps)</h1>
+<p class="sub">설치 환경이 제각각인 카메라를 자동 재학습으로 따라가기</p>
+<div class="res">수집부터 SoC 배포·평가까지 단독, 구조 4회 전환</div>
 <div class="tags"><span class="tag">2026.02~05</span><span class="tag">온디바이스 검출기를 탑재한 상용 AI 카메라 + 로컬 GPU 서버</span><span class="tag">클라우드 미사용</span></div>
 </div></div>
 <main style="--c:#7c3aed"><div class="wrap narrow"><article>
@@ -46,7 +47,7 @@
 <section class="item" id="s1"><div class="num">1</div><div class="ibody"><h3>같은 가중치인데 현장마다 다르게 틀렸다.</h3><p>어떤 곳은 그림자를, 어떤 곳은 특정 구조물을 사람으로 잡았다. 공용 가중치 하나를 잘 만드는 것으로는 닿지 않는 문제라고 봤다.</p><details><summary>측정 조건</summary><p>제약 네 가지: 최대 100대 동시 관리(목표치) · 월 또는 계절 주기 · 로컬 서버이고 데이터를 클라우드로 내보내지 않음 · 사람이 라벨을 붙지 않음.</p></details></div></section><section class="item" id="s2"><div class="num">2</div><div class="ibody"><h3>목표 지표가 중간에 반대로 뒤집혔다.</h3><p>처음에는 미탐을 조금 허용하더라도 오탐을 줄이는 쪽이었는데, 고객 의견이 들어오면서 정반대가 됐다. 임계값을 코드에 박아두지 않고 사이클마다 따로 저장하게 만든 것은 이 전환을 겪고 나서다.</p><details><summary>측정 조건</summary><p>설계 시점의 목표가 바뀔 수 있다는 것을 전제에 넣지 않았던 결과다.</p></details></div></section><section class="item" id="s3"><div class="num">3</div><div class="ibody"><h3>구조를 네 번 갈아엎었다.</h3><p>파일 이름으로 데이터를 관리하던 프로토타입은 2대째부터 성립하지 않았다. DB 상태 기반으로 다시 짜면서 데이터 하나의 진행을 컬럼 하나가 지배하게 하고 12개 상태를 정의했다.</p><details><summary>측정 조건</summary><p>v0.1 직렬 → v1.0 상태 기반 병렬 → v1.1 클러스터 단위 학습(카메라마다 학습하니 GPU가 모자랐다) → v2.0 배포 후 평가. 워커는 자기 상태만 집어가고, 집는 순간 진행 중으로 바꿔 중복 처리를 막는다.</p></details></div></section><section class="item" id="s4"><div class="num">4</div><div class="ibody"><h3>갇힌 데이터를 살리는 작업이 더 나쁜 일을 만들 뻔했다.</h3><p>진행 중 상태에서 워커가 죽으면 그 데이터는 아무도 집어가지 않는다. 10분마다 되돌리게 했는데, 무조건 돌리면 살아서 처리 중인 워커의 데이터까지 뺏어와 같은 데이터를 두 번 처리한다. <strong>그 상태를 담당하는 서버가 전부 죽어 있을 때만</strong> 되돌리도록 조건을 걸었다.</p><figure><a href="/assets/img/fig_mlops2_states.png" target="_blank"><img src="/assets/img/fig_mlops2_states.png" loading="lazy" alt="fig_mlops2_states"></a></figure><details><summary>측정 조건</summary><p>복구를 늦게 하는 것이 중복 처리보다 낫다고 판단했다.</p></details></div></section><section class="item" id="s5"><div class="num">5</div><div class="ibody"><h3>모델이 만든 라벨을 믿지 않았는데, 검증하는 쪽은 검증하지 않았다.</h3><p>검출 모델이 후보 라벨을 만들고 VLM이 객체마다 맞는지 판정해 틀린 것을 버리는 2단계로 나눴다. 그런데 <strong>그 VLM의 판정이 맞는지는 누구도 확인하지 않았다.</strong> 표본을 떼어 사람이 대조하는 절차를 넣었어야 했다.</p><details><summary>측정 조건</summary><p>5종(사람·차량·이륜차·번호판·얼굴). 이미지를 통째로 판정하면 한 객체 때문에 멀쩡한 라벨까지 버리게 되어 객체별 판정으로 설계. 자동 라벨의 신뢰도는 지금도 모른다.</p></details></div></section><section class="item" id="s6"><div class="num">6</div><div class="ibody"><h3>몇 개로 묶을지를 거리로 정하지 않았다.</h3><p>카메라 100대에 모델 100개는 학습도 배포도 관리도 감당이 안 되어 비슷한 환경끼리 묶었다. 임계값을 특징 공간의 거리로 정할 수도 있었지만, <strong>후보 4개마다 실제로 작은 모델을 학습시켜 F1과 mAP로 골랐다.</strong> 묶는 목적이 특징이 가까운 것이 아니라 같이 학습시켰을 때 잘 되는 것이기 때문이다.</p><figure><a href="/assets/img/fig_mlops3_threshold.png" target="_blank"><img src="/assets/img/fig_mlops3_threshold.png" loading="lazy" alt="fig_mlops3_threshold"></a></figure><details><summary>측정 조건</summary><p>카메라당 24시간에 걸쳐 96장 수집 → 특징 추출 후 낮과 밤을 나눠 따로 인코딩해 이어 붙임. 섞어서 평균 내면 어느 쪽도 아닌 벡터가 된다. 학습 비용은 사이클당 한 번이라 감당 가능하다고 봤다.</p></details></div></section><section class="item" id="s7"><div class="num">7</div><div class="ibody"><h3>지표가 이상했는데 모델 문제가 아니었다.</h3><p>번호판과 얼굴의 미탐률이 비현실적으로 높게 나왔다. <strong>카메라 펌웨어가 그 두 클래스를 애초에 내보내지 않고 있었다.</strong> 집계에서 뺐지만 지우지 않고 설정 토글로 남겨, 펌웨어가 고쳐지면 과거에 쌓인 것까지 소급해 반영되게 했다.</p><details><summary>측정 조건</summary><p>온디바이스 검출 결과와 검증된 라벨을 IoU 0.5로 매칭해 클래스별 FPR·FNR 집계. 배포가 카메라마다 순차로 이뤄져 카메라별 배포 시각으로 평가 윈도우를 끊었다.</p></details></div></section><section class="item" id="s8"><div class="num">8</div><div class="ibody"><h3>배포까지 자동으로 돌았고, 나아졌는지는 끝내 재지 못했다.</h3><p>학습된 모델은 INT8 QAT를 거쳐 카메라 SoC 바이너리로 변환돼 실제로 올라갔다. <strong>변환 전후의 정확도 차이도, 재학습의 개선 폭도 측정하기 전에 중단됐다(2026.05).</strong> 묶어서 학습하는 것이 개별 학습보다 이득이었는지도 모른 채 끝났다.</p><details><summary>측정 조건</summary><p>이 기록에 "오탐이 몇 % 줄었다"는 문장이 없는 이유다. 기능을 먼저 쌓고 효과 측정을 v2.0에 붙인 것이 순서 착오였고, 평가 스테이지는 v0.1에 있었어야 했다.</p></details></div></section>
 <div class="tailnote"><p>상세판(7p) 별도 · 회사명·제품명·고객 정보 미포함 · SoC 벤더와 툴체인 이름, 내부 호스트·인증 정보, 소스 코드 제외 · 언급된 모델은 모두 공개된 것</p></div>
 </article>
-<a class="next" style="--nc:#ea580c" href="/cases/fire-lora/"><div class="l">다음 작업 →</div><div class="t">13/13 복구는 암기였다</div></a>
+<a class="next" style="--nc:#ea580c" href="/cases/fire-lora/"><div class="l">다음 작업 →</div><div class="t">VLM 도메인 적응 평가 (화재 LoRA)</div></a>
 </div></main>
 <footer class="site"><div class="wrap">
 수치는 모두 측정 조건과 함께 적었습니다. 회사 프로젝트는 제품 구조·내부 경로·고객 정보를 빼고 정리했습니다.
