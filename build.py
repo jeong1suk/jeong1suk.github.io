@@ -52,6 +52,12 @@ PROJECTS = [
          summary="카메라 환경별 자동 재학습 파이프라인. 구조를 네 번 갈아엎었고, "
                  "미탐률 이상의 원인은 모델이 아니라 펌웨어였다.",
          figs={0: ["fig_mlops1_pipeline"], 4: ["fig_mlops2_states"], 6: ["fig_mlops3_threshold"]}),
+    dict(slug="senior-principles", group="more", period="2026.04~05", accent="#0f766e",
+         kind="AI 도구", label="회사 프로젝트 · 개인 주도 · 코드 비공개",
+         hook="AI 에이전트의 \"완료했습니다\"를 믿을 수 있나",
+         stat="이전 수치 철회", stat_cap="측정 파이프라인 결함을 스스로 발견",
+         summary="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들고, 함정 시나리오 64종으로 평가했다. "
+                 "\"위반 0%\"는 수정 전 플러그인을 채점한 결과였다."),
     dict(slug="fire-lora", group="more", period="2026.10", accent="#ea580c",
          kind="실험", label="실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개",
          hook="13/13 복구는 암기였다",
@@ -71,10 +77,15 @@ HABITS = [
 ]
 
 LEAK_PATTERNS = [
-    r"<!--", r"(?i)claude", r"\[확인", r"<계정>", r"C00_\d", r"review_(codex|gpt)",
+    r"<!--", r"Claude(가|의 판단| 판단| 초안)", r"\[Claude", r"\[확인", r"<계정>", r"C00_\d", r"review_(codex|gpt)",
     r"FIRE_LORA", r"/home/", r"Desktop", r"(?i)aimatix", r"에이아이매틱스",
     r"best_alpha", r"\.md\b", r"맑은에스티", r"(?i)malgeun", r"010-?\d{4}-?\d{4}", r"하남시",
 ]
+
+MERMAID_JS = """<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({ startOnLoad: true, theme: "neutral", fontFamily: "Pretendard Variable, Pretendard, sans-serif" });
+</script>"""
 
 FONT = "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
 
@@ -196,7 +207,10 @@ strong { background:linear-gradient(transparent 62%, #fde68a 62%); font-weight:7
 .num { flex:0 0 34px; height:34px; border-radius:50%; background:var(--c); color:#fff; font-weight:800;
        display:flex; align-items:center; justify-content:center; font-size:15px; }
 .ibody { flex:1; min-width:0; }
+.ibody ul, .ibody ol { padding-left:22px; } .ibody li { margin:4px 0; }
+.ibody table { border-collapse:collapse; width:100%; font-size:14px; margin:12px 0; } .ibody th, .ibody td { border:1px solid var(--line); padding:7px 10px; text-align:left; } .ibody th { background:var(--soft); }
 .ibody h3 { margin:3px 0 8px; font-size:19px; line-height:1.45; letter-spacing:-.3px; }
+pre.mermaid { background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px; overflow-x:auto; text-align:center; margin:16px 0; }
 figure { margin:16px 0; } figure img { width:100%; display:block; border:1px solid var(--line); border-radius:10px; cursor:zoom-in; }
 details { margin-top:10px; font-size:14px; color:var(--muted); }
 summary { cursor:pointer; color:var(--c); font-size:13.5px; font-weight:700; user-select:none; }
@@ -256,6 +270,7 @@ def page(title, body, desc=""):
 <footer class="site"><div class="wrap">
 수치는 모두 측정 조건과 함께 적었습니다. 회사 프로젝트는 제품 구조·내부 경로·고객 정보를 빼고 정리했습니다.
 </div></footer>
+{MERMAID_JS if 'class="mermaid"' in body else ""}
 </body>
 </html>
 """
@@ -265,8 +280,21 @@ def strip_comments(text):
     return re.sub(r"<!--.*?-->\s*", "", text, flags=re.S)
 
 
+MERMAID_RE = re.compile(r"```mermaid\n(.*?)```", re.S)
+
+
 def md(text):
-    return markdown.markdown(text.strip(), extensions=["tables", "nl2br"])
+    """마크다운 → HTML. ```mermaid 블록은 그대로 보존해 브라우저에서 그린다(nl2br가 줄바꿈을 망치지 않게)."""
+    blocks = []
+
+    def keep(m):
+        blocks.append(m.group(1))
+        return f"\n\nMERMAIDBLOCK{len(blocks) - 1}\n\n"
+
+    out = markdown.markdown(MERMAID_RE.sub(keep, text.strip()), extensions=["tables", "nl2br"])
+    for k, code in enumerate(blocks):
+        out = out.replace(f"<p>MERMAIDBLOCK{k}</p>", f'<pre class="mermaid">{html.escape(code)}</pre>')
+    return out
 
 
 def inline(text):
@@ -394,9 +422,9 @@ def render_index():
 </div></section>
 
 <section class="block"><div class="wrap">
-<h2 class="sec-h">그 밖의 실험</h2>
-<p class="sec-sub">결과가 좋아 보일 때 평가를 다시 의심한 기록입니다.</p>
-<div class="grid">{more_cards}</div>
+<h2 class="sec-h">그 밖의 작업</h2>
+<p class="sec-sub">결과가 좋아 보일 때 측정을 다시 의심한 기록입니다.</p>
+<div class="grid more">{more_cards}</div>
 </div></section>
 
 <section class="block" id="how"><div class="wrap">

@@ -115,7 +115,10 @@ strong { background:linear-gradient(transparent 62%, #fde68a 62%); font-weight:7
 .num { flex:0 0 34px; height:34px; border-radius:50%; background:var(--c); color:#fff; font-weight:800;
        display:flex; align-items:center; justify-content:center; font-size:15px; }
 .ibody { flex:1; min-width:0; }
+.ibody ul, .ibody ol { padding-left:22px; } .ibody li { margin:4px 0; }
+.ibody table { border-collapse:collapse; width:100%; font-size:14px; margin:12px 0; } .ibody th, .ibody td { border:1px solid var(--line); padding:7px 10px; text-align:left; } .ibody th { background:var(--soft); }
 .ibody h3 { margin:3px 0 8px; font-size:19px; line-height:1.45; letter-spacing:-.3px; }
+pre.mermaid { background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px; overflow-x:auto; text-align:center; margin:16px 0; }
 figure { margin:16px 0; } figure img { width:100%; display:block; border:1px solid var(--line); border-radius:10px; cursor:zoom-in; }
 details { margin-top:10px; font-size:14px; color:var(--muted); }
 summary { cursor:pointer; color:var(--c); font-size:13.5px; font-weight:700; user-select:none; }
