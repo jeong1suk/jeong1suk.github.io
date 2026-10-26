@@ -53,10 +53,10 @@ PROJECTS = [
                  "미탐률 이상의 원인은 모델이 아니라 펌웨어였다.",
          figs={0: ["fig_mlops1_pipeline"], 4: ["fig_mlops2_states"], 6: ["fig_mlops3_threshold"]}),
     dict(slug="senior-principles", group="more", period="2026.04~05", accent="#0f766e",
-         kind="AI 도구", label="회사 프로젝트 · 개인 주도 · 코드 비공개",
+         kind="AI 도구", label="회사 프로젝트 · 단독 개발 · 코드 비공개",
          hook="AI 에이전트의 \"완료했습니다\"를 믿을 수 있나",
          stat="이전 수치 철회", stat_cap="측정 파이프라인 결함을 스스로 발견",
-         summary="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들어 사내에서 실제로 썼고, 함정 시나리오 64종으로 평가했다. "
+         summary="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들어 카메라·VMS 연동 시스템 개발에 실제로 썼고, 함정 시나리오 64종으로 평가했다. "
                  "\"위반 0%\"는 수정 전 플러그인을 채점한 결과였다."),
     dict(slug="fire-lora", group="more", period="2026.10", accent="#ea580c",
          kind="실험", label="실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개",
