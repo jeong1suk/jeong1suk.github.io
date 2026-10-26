@@ -39,7 +39,13 @@ collage(["fall_0403", "fall_0378", "fall_0317", "fall_0383"], "edge-vlm-2gb.jpg"
 fit(IMG / "vlm_serving_load_curve.png", "vlm-serving.jpg")
 fit(IMG / "fig_mlops1_pipeline.png", "mlops-retrain.jpg")
 fit(IMG / "diagrams" / "senior-principles_2.png", "senior-principles.jpg")
-fit(IMG / "onvif_rag_score.png", "onvif-rag.jpg")
+# onvif-rag 썸네일은 실제 챗봇 화면 (assets/img/onvif/line.png 상단) — 아래 make_onvif_thumb 참고
+# fit(IMG / "onvif_rag_score.png", "onvif-rag.jpg")
 fit(IMG / "fire_lora_tradeoff.png", "fire-lora.jpg")
 fit(IMG / "pm_flow.png", "pm-requirements.jpg")
 print(sorted(p.name for p in OUT.iterdir()))
+# ONVIF RAG: 공개 표준 질문에 답한 실제 챗봇 화면 상단. 위쪽 여백은 카드 배지 자리.
+_bg = Image.new("RGB", (W, H), "#eef2f7")
+_im = Image.open(IMG / "onvif" / "line.png").convert("RGB")
+_im = _im.resize((W - 40, int(_im.height * (W - 40) / _im.width)), Image.LANCZOS).crop((0, 0, W - 40, H - 54))
+_bg.paste(_im, (20, 54)); _bg.save(OUT / "onvif-rag.jpg", quality=90)

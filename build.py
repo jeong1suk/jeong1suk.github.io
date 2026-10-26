@@ -59,7 +59,11 @@ PROJECTS = [
          kind="사내 도구", label="회사 프로젝트 · 단독 개발 · 코드 비공개",
          summary="ONVIF 표준 원문을 근거로 답하는 로컬 RAG. 원문은 코드로 뽑아 그대로 보여 주고 7B에게는 보조 설명만 맡겼다. "
                  "실제 질문 3개가 자체 평가보다 많은 버그를 잡았다.",
-         figs={4: ["onvif_rag_score"]}),
+         figs={1: ["onvif/garbled|개선 전 답변. 7B가 쓴 2번 문단 중간에 중국어 문장이 섞여 나왔다."],
+               2: ["onvif/before|개선 전: 7B가 답을 썼다. 맞는 표준 기능(번호판 인식 규칙)은 찾지 못했고, 표준에 없는 토픽 tns1:VehicleEntryEventTopic을 지어냈다. 자동 점검이 이것을 표시했다.",
+                   "onvif/after|개선 후, 같은 질문: 맞는 표준 기능(License Plate Recognition)의 원문을 LLM 없이 그대로 보여 준다."],
+               3: ["onvif/line|질문 속 조건(선, 방향)을 판정해 표준 규칙 하나로 충분한지 알려 주고, 원문 위치를 함께 보여 준다."],
+               4: ["onvif_rag_score"]}),
     dict(slug="pm-requirements",
          name='프로젝트 간 연동 조율 (PM 부재)', result='PMBOK 학습 → 헌장 · WBS 38 · 요구사항 100건+', group="learn", period="2026.06~09", accent="#475569",
          kind="배우고 적용", label="회사 프로젝트 · 연동 조율 담당", notes_label="자세히",
@@ -114,6 +118,9 @@ CAREER = [
     ("2024.07", "정보처리기사", ""),
     ("2019.03 ~ 2023.02", "세종대학교", "무인이동체공학과 졸업"),
 ]
+
+# 썸네일이 실제 사진·화면인 카드(그래프가 아니라서 흑백 처리를 하지 않는다)
+REAL_THUMBS = {"edge-vlm-2gb", "onvif-rag"}
 
 HERO_STATS = [("1.8초 → 300ms", "Jetson 8GB, VLM 검증 지연"),
               ("2,810 → 1,755MB", "정확도 유지, 런타임 교체"),
@@ -274,6 +281,7 @@ strong { background:linear-gradient(transparent 62%, #fde68a 62%); font-weight:7
 .ibody table { border-collapse:collapse; width:100%; font-size:14px; margin:12px 0; } .ibody th, .ibody td { border:1px solid var(--line); padding:7px 10px; text-align:left; } .ibody th { background:var(--soft); }
 .ibody h3 { margin:3px 0 8px; font-size:19px; line-height:1.45; letter-spacing:-.3px; }
 pre.mermaid { background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px; overflow-x:auto; text-align:center; margin:16px 0; }
+figcaption { font-size:13px; color:var(--muted); margin:6px 2px 0; line-height:1.55; }
 figure { margin:16px 0; } figure img { width:100%; display:block; border:1px solid var(--line); border-radius:10px; cursor:zoom-in; }
 details { margin-top:10px; font-size:14px; color:var(--muted); }
 summary { cursor:pointer; color:var(--c); font-size:13.5px; font-weight:700; user-select:none; }
@@ -405,8 +413,10 @@ def fig_html(names):
         if n.startswith("gallery:"):
             out.append((SRC / "galleries" / f"{n[8:]}.html").read_text(encoding="utf-8"))
         else:
+            n, _, cap = n.partition("|")  # "이름|캡션" 형식이면 그림 아래 설명을 붙인다
+            capt = f"<figcaption>{html.escape(cap)}</figcaption>" if cap else ""
             out.append(f'<figure><a href="/assets/img/{n}.png" target="_blank">'
-                       f'<img src="/assets/img/{n}.png" loading="lazy" alt="{n}"></a></figure>')
+                       f'<img src="/assets/img/{n}.png" loading="lazy" alt="{html.escape(cap or n)}"></a>{capt}</figure>')
     return "".join(out)
 
 
@@ -469,7 +479,7 @@ def card(p, wide=False):
     thumb = ROOT / "assets" / "img" / "thumbs" / f"{p['slug']}.jpg"
     img = f'<img src="/assets/img/thumbs/{p["slug"]}.jpg" alt="" loading="lazy">' if thumb.exists() else ""
     return (f'<a class="card{" wide" if wide else ""}" style="--c:{p["accent"]}" href="/cases/{p["slug"]}/">'
-            f'<div class="thumb{" graph" if img and p["slug"] != "edge-vlm-2gb" else ""}{"" if img else " noimg"}">{img}<span class="kind">{html.escape(p["kind"])}</span></div>'
+            f'<div class="thumb{" graph" if img and p["slug"] not in REAL_THUMBS else ""}{"" if img else " noimg"}">{img}<span class="kind">{html.escape(p["kind"])}</span></div>'
             f'<div class="cbody"><div class="dchips">{domain_chips(p["slug"])}</div><div class="ttl">{html.escape(p["name"])}</div>'
             f'<div class="res">{html.escape(p["result"])}</div>'
             f'<p class="sum">{html.escape(p["summary"])}</p>'
