@@ -3,52 +3,58 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>정원석 · 포트폴리오</title>
-<meta name="description" content="VLM·비전 모델을 현장에서 되게 만드는 엔지니어 정원석의 포트폴리오">
+<title>정원석 · Vision·VLM·Edge AI 엔지니어</title>
+<meta name="description" content="모델이 현장에서 왜 틀리는지 찾아내고, 제한된 장비에서 돌아가게 만드는 엔지니어 정원석의 포트폴리오">
+<meta property="og:title" content="정원석 · Vision·VLM·Edge AI 엔지니어">
+<meta property="og:description" content="모델이 현장에서 왜 틀리는지 찾아내고, 제한된 장비에서 돌아가게 만드는 엔지니어 정원석의 포트폴리오">
+<meta property="og:image" content="/assets/img/thumbs/edge-vlm-2gb.jpg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
 <header class="site"><div class="wrap">
-  <a href="/"><strong>정원석</strong></a>
-  <nav><a href="/#work">작업</a><a href="https://github.com/jeong1suk">GitHub</a></nav>
+  <a class="brand" href="/">정원석</a>
+  <nav><a href="/#work">작업</a><a href="/#how">일하는 방식</a><a href="https://github.com/jeong1suk">GitHub</a></nav>
 </div></header>
-<main><div class="wrap">
-
-<section class="hero">
-<h1>VLM·비전 모델이 현장에서 왜 실패하는지 찾아내고, 되게 만드는 엔지니어</h1>
+<section class="hero"><div class="wrap">
+<p class="eyebrow">VISION · VLM · EDGE AI ENGINEER</p>
+<h1>모델이 현장에서 <em>왜 틀리는지</em> 찾아내고,<br>제한된 장비에서 돌아가게 만듭니다</h1>
 <p class="lead">오프라인에서 좋아 보이던 모델이 실제 환경에서 무너지는 지점을 측정으로 찾고,
-프롬프트·입력·모델 선택·평가 기준을 바꿔 되돌립니다.</p>
-<p class="sub">판정 기준을 먼저 세우고, 증명하지 못한 것을 함께 남기는 방식으로 일합니다.</p>
-</section>
+프롬프트·입력·모델·런타임을 바꿔 되돌립니다.</p>
+<div class="hstats"><div class="hstat"><div class="n">1.8초 → 300ms</div><div class="c">Jetson 8GB, VLM 검증 지연</div></div><div class="hstat"><div class="n">2,810 → 1,755MB</div><div class="c">정확도 유지, 런타임 교체</div></div><div class="hstat"><div class="n">25 → 95건/초</div><div class="c">GPU 한 장, 연속 배칭</div></div></div>
+<div class="btns"><a class="btn-primary" href="#work">작업 보기</a><a class="btn-ghost" href="https://github.com/jeong1suk">GitHub</a></div>
+</div></section>
 
-<h2>이 기록이 지키는 것</h2>
-<ul class="principles">
-<li>모든 수치에 측정 조건을 붙입니다. 조건이 빠진 숫자는 결과로 쓰지 않습니다.</li>
-<li>각 프로젝트의 마지막 항목은 증명하지 못한 것입니다.</li>
-<li>회사 프로젝트는 제품 아키텍처·내부 경로·고객 정보를 빼고 정리했습니다. 상세판은 요청하시면 보내드립니다.</li>
-</ul>
-
-<h2 id="work">대표 작업</h2>
-<div class="flow">
-  <div class="step"><span class="who">회사</span>8GB 기기에 2차 검증기를 올릴 수 있나</div>
-  <div class="arrow">→</div>
-  <div class="step"><span class="who">개인</span>2GB 안에서 상시로 돌리려면</div>
-  <div class="arrow">→</div>
-  <div class="step"><span class="who">개인</span>서버로 모으면 카메라 몇 대까지</div>
+<section class="block" id="work"><div class="wrap">
+<h2 class="sec-h">대표 작업</h2>
+<p class="sec-sub">회사에서 남은 질문을 직접 이어서 풀었습니다. 카드를 누르면 과정과 실패까지 볼 수 있습니다.</p>
+<div class="flow"><a href="/cases/edge-deploy/"><span class="who">회사</span>8GB 기기에 2차 검증기를 올릴 수 있나</a><span class="arr">→</span><a href="/cases/edge-vlm-2gb/"><span class="who">업무 연장 연구</span>2GB 안에서 상시로 돌리려면</a><span class="arr">→</span><a href="/cases/vlm-serving/"><span class="who">업무 연장 연구</span>서버로 모으면 카메라 몇 대까지</a></div>
+<div class="grid">
+<a class="card" style="--c:#4f46e5" href="/cases/edge-deploy/"><div class="thumb graph"><img src="/assets/img/thumbs/edge-deploy.jpg" alt="" loading="lazy"><span class="kind">회사 프로젝트</span><div class="st"><div class="n">1.8초 → 300ms</div><div class="c">VLM 2차 검증 지연</div></div></div><div class="cbody"><div class="hook">빠른 모델이 왜 탈락했나</div><p class="sum">8GB 공유 메모리에 2차 검증기를 추가할 수 있는지 판정했다. 25ms짜리 경량 모델은 쓰러짐과 앉음을 0.02 차이로밖에 구분하지 못했다.</p><div class="foot"><span>2026.04 · 코드 비공개</span><span class="go">읽기 →</span></div></div></a>
+<a class="card" style="--c:#0d9488" href="/cases/edge-vlm-2gb/"><div class="thumb"><img src="/assets/img/thumbs/edge-vlm-2gb.jpg" alt="" loading="lazy"><span class="kind">업무 연장 연구</span><div class="st"><div class="n">2,810 → 1,755MB</div><div class="c">낙상 AUROC 0.960 유지</div></div></div><div class="cbody"><div class="hook">4bit로 줄여도 안 들어갔다. 그럼 뭘 줄여야 하나</div><p class="sum">회사에서 남은 질문을 공개 데이터로 다시 풀었다. 양자화보다 런타임 교체가 컸고, 오탐은 모델보다 흑백(IR) 영상에서 났다.</p><div class="foot"><span>2026.10 · 공개 데이터</span><span class="go">읽기 →</span></div></div></a>
+<a class="card" style="--c:#2563eb" href="/cases/vlm-serving/"><div class="thumb graph"><img src="/assets/img/thumbs/vlm-serving.jpg" alt="" loading="lazy"><span class="kind">업무 연장 연구</span><div class="st"><div class="n">25 → 95건/초</div><div class="c">같은 GPU, 배칭만 바꿔서</div></div></div><div class="cbody"><div class="hook">GPU 한 장으로 카메라 몇 대까지 버티나</div><p class="sum">2차 검증을 서버 한 대로 모았다. 처리량은 배칭이 바꿨고 AWQ는 바꾸지 못했다. 모델 교체는 61.5초 중단이었다.</p><div class="foot"><span>2026.10 · 공개 데이터</span><span class="go">읽기 →</span></div></div></a>
+<a class="card" style="--c:#7c3aed" href="/cases/mlops-retrain/"><div class="thumb graph"><img src="/assets/img/thumbs/mlops-retrain.jpg" alt="" loading="lazy"><span class="kind">회사 프로젝트</span><div class="st"><div class="n">구조 4회 전환</div><div class="c">수집부터 배포·평가까지 단독</div></div></div><div class="cbody"><div class="hook">현장마다 다르게 틀리는 모델, 사람 없이 고칠 수 있나</div><p class="sum">카메라 환경별 자동 재학습 파이프라인. 구조를 네 번 갈아엎었고, 미탐률 이상의 원인은 모델이 아니라 펌웨어였다.</p><div class="foot"><span>2026.02~05 · 단독 설계·구현</span><span class="go">읽기 →</span></div></div></a>
 </div>
-<div class="cards">
-<a class="card" href="/cases/edge-deploy/"><div class="cstat"><div class="stat">1.8초 → 300ms</div><div class="cap">VLM 2차 검증 지연 · 정확도는 떨어지지 않음(21장)</div></div><div class="cmain"><div class="meta">2026.04 · 회사 프로젝트 · 코드 비공개</div><div class="title">8GB 엣지 디바이스에 2차 검증기를 올리기까지</div><p class="summary">8GB 공유 메모리에 2차 검증기를 추가할 수 있는지 판정한 기록. 입력을 줄여 1.8초를 300ms로 만들었고, 재현율은 끝내 측정하지 못했다.</p><div class="tags"><span class="tag">Jetson Orin NX 8GB(UMA)</span><span class="tag">CLIP ViT-B/32 TensorRT INT8 ↔ SmolVLM</span><span class="tag">상용 AI 카메라 제품</span></div></div></a>
-<a class="card" href="/cases/edge-vlm-2gb/"><div class="cstat"><div class="stat">2,810 → 1,755MB</div><div class="cap">PyTorch FP16 → llama.cpp Q8_0 · 낙상 AUROC 0.960</div></div><div class="cmain"><div class="meta">2026.10 · 개인 프로젝트 · 공개 데이터 · 코드 공개</div><div class="title">엣지 VLM 검증기를 2GB 안에 넣기: 양자화보다 런타임이 먼저였다</div><p class="summary">회사에서 남은 질문을 공개 데이터로 다시 풀었다. PyTorch FP16 2,810MB에서 llama.cpp Q8_0 1,755MB로, 낙상 AUROC는 낮아지지 않았다(0.960).</p><div class="tags"><span class="tag">RTX 4070 SUPER(Jetson 미실측)</span><span class="tag">SmolVLM-500M</span><span class="tag">CAUCAFall 500장, D-Fire 854장</span></div></div></a>
-<a class="card" href="/cases/vlm-serving/"><div class="cstat"><div class="stat">25 → 95건/초</div><div class="cap">HF batch 1 → vLLM 연속 배칭 · 같은 GPU</div></div><div class="cmain"><div class="meta">2026.10 · 개인 프로젝트 · 공개 데이터</div><div class="title">VLM 검증기를 중앙 서버로 모으면: 처리량을 바꾼 것은 양자화가 아니라 배칭이었다</div><p class="summary">2차 검증을 GPU 서버 한 대로 모으면 카메라 몇 대까지 감당하나. 처리량은 배칭이 바꿨고(초당 25건 → 95건), AWQ는 바꾸지 못했다.</p><div class="tags"><span class="tag">RTX 4070 SUPER 12GB 1장</span><span class="tag">SmolVLM-500M</span><span class="tag">vLLM v0.32.0</span><span class="tag">minikube(GPU)</span></div></div></a>
-<a class="card" href="/cases/mlops-retrain/"><div class="cstat"><div class="stat">구조 4회 전환</div><div class="cap">v0.1 직렬 → v2.0 배포 후 평가</div></div><div class="cmain"><div class="meta">2026.02~05 · 회사 프로젝트 · 코드 비공개</div><div class="title">설치 환경이 제각각인 카메라를 자동 재학습으로 따라가기</div><p class="summary">설치 환경이 제각각인 카메라를 자동 재학습으로 따라가는 파이프라인. 구조를 네 번 갈아엎었고, 개선 폭은 측정하기 전에 중단됐다.</p><div class="tags"><span class="tag">온디바이스 검출기를 탑재한 상용 AI 카메라 + 로컬 GPU 서버</span><span class="tag">클라우드 미사용</span></div></div></a>
-</div>
+</div></section>
 
-<h2>그 밖의 실험</h2>
-<div class="cards">
-<a class="card" href="/cases/fire-lora/"><div class="cstat"><div class="stat">88/88 오탐</div><div class="cap">처음 보는 카메라의 음성이 전부 Yes (3 epoch)</div></div><div class="cmain"><div class="meta">2026.10 · 개인 실험 · 회사 업무 데이터 사용 · 코드·데이터 비공개</div><div class="title">VLM에 화재를 보이게 한 실험, 그리고 실제로 배운 것</div><p class="summary">VLM에 화재 LoRA를 붙인 실험. 13/13 복구가 암기였음을 홀드아웃으로 드러냈고, 처음 보는 음성에서는 전부 무너졌다.</p><div class="tags"><span class="tag">RTX 4070 12GB</span><span class="tag">SmolVLM-500M-Instruct + LoRA(9.57M 파라미터)</span><span class="tag">372프레임(화재 172 / 야간 적외선 intrusion 200)</span></div></div></a>
-</div>
+<section class="block"><div class="wrap">
+<h2 class="sec-h">그 밖의 실험</h2>
+<p class="sec-sub">결과가 좋아 보일 때 평가를 다시 의심한 기록입니다.</p>
+<div class="grid"><a class="card wide" style="--c:#ea580c" href="/cases/fire-lora/"><div class="thumb noimg"><span class="kind">실험</span><div class="st"><div class="n">88/88 오탐</div><div class="c">처음 보는 카메라의 정상 장면</div></div></div><div class="cbody"><div class="hook">13/13 복구는 암기였다</div><p class="sum">VLM에 화재 LoRA를 붙였다. 홀드아웃으로 암기를 걸러냈더니, 처음 보는 카메라에서는 정상 장면이 전부 화재가 됐다.</p><div class="foot"><span>2026.10 · 회사 업무 데이터 사용</span><span class="go">읽기 →</span></div></div></a></div>
+</div></section>
 
-</div></main>
+<section class="block" id="how"><div class="wrap">
+<h2 class="sec-h">일하는 방식</h2>
+<p class="sec-sub">말이 아니라 기록으로 보여드립니다. 누르면 해당 항목으로 이동합니다.</p>
+<div class="habits"><a class="habit" href="/cases/edge-deploy/#s2"><div class="no">01</div><h3>측정 전에 기준을 먼저 적는다</h3><p>P95 35ms · 여유 700MB를 설정 파일에 먼저 적었다. 그리고 전송까지 포함하면 미달이라는 걸 나중에 스스로 찾았다.</p><div class="src">빠른 모델이 왜 탈락했나 · 2번 →</div></a><a class="habit" href="/cases/fire-lora/#s1"><div class="no">02</div><h3>좋은 숫자를 먼저 의심한다</h3><p>26/26 복구가 학습 데이터에 있던 이벤트였다. 13개를 떼어 다시 쟀다.</p><div class="src">13/13 복구는 암기였다 · 1번 →</div></a><a class="habit" href="/cases/edge-deploy/#s8"><div class="no">03</div><h3>증명하지 못한 것을 남긴다</h3><p>트리거된 이벤트만 기록돼 재현율은 측정할 수 없었다. 측정한 것처럼 쓰지 않았다.</p><div class="src">빠른 모델이 왜 탈락했나 · 8번 →</div></a></div>
+</div></section>
+
+<section class="band"><div class="wrap">
+<h2>코드와 판단 기록은 GitHub에 있습니다</h2>
+<p>공개 데이터로 다시 푼 연구는 실험 스크립트와 결정 기록까지 공개했습니다.</p>
+<div class="btns"><a class="btn-primary" href="https://github.com/jeong1suk">GitHub 보기</a></div>
+</div></section>
+
 <footer class="site"><div class="wrap">
 수치는 모두 측정 조건과 함께 적었습니다. 회사 프로젝트는 제품 구조·내부 경로·고객 정보를 빼고 정리했습니다.
 </div></footer>

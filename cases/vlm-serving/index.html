@@ -4,27 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VLM 검증기를 중앙 서버로 모으면: 처리량을 바꾼 것은 양자화가 아니라 배칭이었다 · 정원석</title>
-<meta name="description" content="2차 검증을 GPU 서버 한 대로 모으면 카메라 몇 대까지 감당하나. 처리량은 배칭이 바꿨고(초당 25건 → 95건), AWQ는 바꾸지 못했다.">
+<meta name="description" content="2차 검증을 서버 한 대로 모았다. 처리량은 배칭이 바꿨고 AWQ는 바꾸지 못했다. 모델 교체는 61.5초 중단이었다.">
+<meta property="og:title" content="VLM 검증기를 중앙 서버로 모으면: 처리량을 바꾼 것은 양자화가 아니라 배칭이었다 · 정원석">
+<meta property="og:description" content="2차 검증을 서버 한 대로 모았다. 처리량은 배칭이 바꿨고 AWQ는 바꾸지 못했다. 모델 교체는 61.5초 중단이었다.">
+<meta property="og:image" content="/assets/img/thumbs/edge-vlm-2gb.jpg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
 <header class="site"><div class="wrap">
-  <a href="/"><strong>정원석</strong></a>
-  <nav><a href="/#work">작업</a><a href="https://github.com/jeong1suk">GitHub</a></nav>
+  <a class="brand" href="/">정원석</a>
+  <nav><a href="/#work">작업</a><a href="/#how">일하는 방식</a><a href="https://github.com/jeong1suk">GitHub</a></nav>
 </div></header>
-<main><div class="wrap">
-<p class="back"><a href="/#work">← 작업 목록</a></p>
-<article>
-<span class="badge">개인 프로젝트 · 공개 데이터</span>
+<div class="chero" style="--c:#2563eb"><div class="wrap narrow">
+<a class="back" href="/#work">← 전체 작업</a><br>
+<span class="badge">업무 연장 자체 연구 · 공개 데이터</span>
 <h1>VLM 검증기를 중앙 서버로 모으면: 처리량을 바꾼 것은 양자화가 아니라 배칭이었다</h1>
-<div class="tags"><span class="tag">2026.10</span><span class="tag">개인 프로젝트</span><span class="tag">RTX 4070 SUPER 12GB 1장</span><span class="tag">SmolVLM-500M</span><span class="tag">vLLM v0.32.0</span><span class="tag">minikube(GPU)</span><span class="tag">평가셋 2,208건</span></div>
-<div class="statline"><span class="stat">25 → 95건/초</span><span class="cap">HF batch 1 → vLLM 연속 배칭 · 같은 GPU</span></div>
+<div class="st"><span class="n">25 → 95건/초</span><span class="c">같은 GPU, 배칭만 바꿔서</span></div>
+<div class="tags"><span class="tag">2026.10</span><span class="tag">업무 연장 자체 연구</span><span class="tag">RTX 4070 SUPER 12GB 1장</span><span class="tag">SmolVLM-500M</span><span class="tag">vLLM v0.32.0</span><span class="tag">minikube(GPU)</span><span class="tag">평가셋 2,208건</span></div>
+</div></div>
+<main style="--c:#2563eb"><div class="wrap narrow"><article>
 <div class="intro"><blockquote>
 <p>회사에서는 카메라마다 엣지 장비에서 VLM 2차 검증을 돌렸고, 이전 프로젝트에서는 그 모델을 2GB 안에 넣는 조건을 찾았다. 하지만 batch 1로만 쟀기 때문에 "카메라가 10대면 어디부터 막히나?"에는 답하지 못했다.<br />
 2차 검증을 중앙 GPU 서버 하나로 모으면, p95 300ms를 지키면서 카메라 몇 대까지 감당할 수 있는가. AWQ 양자화는 그 숫자를 늘려 주는가.</p>
 </blockquote>
 <p><img src="/assets/img/vlm_serving_load_curve.png" style="width:100%"></p></div>
-<nav class="toc"><div class="toc-h">한눈에 보기</div><ol>
+<nav class="toc"><div class="toc-h">한눈에 보기 · 항목을 누르면 이동합니다</div><ol>
 <li><a href="#s1">질문을 "빨라지나"가 아니라 "지연 목표 안에서 카메라 몇 대까지"로 잡았다.</a></li>
 <li><a href="#s2">엔진을 바꾸기 전에 점수가 같은지부터 확인했다.</a></li>
 <li><a href="#s3">처리량은 배칭이 결정했다.</a></li>
@@ -37,6 +42,7 @@
 <section class="item" id="s1"><div class="num">1</div><div class="ibody"><h3>질문을 "빨라지나"가 아니라 "지연 목표 안에서 카메라 몇 대까지"로 잡았다.</h3><p>목표는 p95 300ms로 정했다. 회사에서 엣지 2차 검증 지연을 1,800ms에서 300ms로 줄였던 기준값이다. 처리량은 이 목표를 지키는 최대 도착률로 정의했다.</p><details><summary>측정 조건</summary><p>open-loop(포아송 도착률)로 대기열 지연까지 포함해 쟀다. 경계 구간은 5 req/s 간격으로 재측정.</p></details></div></section><section class="item" id="s2"><div class="num">2</div><div class="ibody"><h3>엔진을 바꾸기 전에 점수가 같은지부터 확인했다.</h3><p>클라이언트에서 512px로 줄여 보내자 화재 점수가 최대 0.10 달라졌다. 원본을 보내고 서버가 줄이게 하자 차이가 0.015 이하로 줄었고, AUROC가 HF FP16과 같아졌다(낙상 0.950, 불꽃 0.971, 연기 0.867).</p><details><summary>측정 조건</summary><p>평가셋: 낙상 CAUCAFall 500장 + 화재 D-Fire 테스트 분할 854장(불꽃·연기 프롬프트 각각) = 2,208건. vLLM의 prefix·전처리 캐시는 꺼서, 같은 이미지가 반복돼도 매번 새 이벤트처럼 처리했다.</p></details></div></section><section class="item" id="s3"><div class="num">3</div><div class="ibody"><h3>처리량은 배칭이 결정했다.</h3><p>같은 GPU에서 HF transformers batch 1은 초당 25건, FastAPI + vLLM(연속 배칭)은 초당 95건이었다(3.8배). 카메라 1대가 초당 0.5건을 보낸다고 가정하면 50대에서 190대가 된다.</p><details><summary>측정 조건</summary><p>동시성 1 p50: HF 32.4ms, vLLM 26.6ms. 카메라당 요청률(0.1 / 0.5 / 1 req/s)은 가정이며, 실제로는 1차 검출기의 트리거 빈도에 달려 있다.</p></details></div></section><section class="item" id="s4"><div class="num">4</div><div class="ibody"><h3>AWQ는 처리량을 바꾸지 못했다.</h3><p>AWQ(W4A16)도 초당 95건으로 FP16과 같았다. 얻은 것은 메모리(0.96 → 0.53GiB)뿐이었다. 판별력은 유지됐지만(AUROC 차이 ±0.005) 판정 뒤집힘이 3.2~4.6%라, 쓰려면 threshold를 다시 정해야 한다.</p><details><summary>측정 조건</summary><p>포화 구간 GPU 사용률 약 90%. 출력은 1토큰이고 요청당 계산의 약 75%가 FP16 그대로인 비전 인코더로 추정된다(파라미터·토큰 수 기반, 프로파일러 미확인). 처리량을 올리려면 비전 쪽(입력 해상도, 비전 양자화)을 봐야 한다. 변환 중 비전 인코더에 걸린 짝짓기 규칙과 float16 NaN 두 군데에서 막혔다.</p></details></div></section><section class="item" id="s5"><div class="num">5</div><div class="ibody"><h3>포화점 근처에서는 작은 오버헤드가 크게 불어났다.</h3><p>FastAPI 게이트웨이는 평소 약 5ms만 더했지만, 초당 100건에서는 대기열이 불어나 p95가 224ms에서 329ms로 뛰었다. 운영 목표는 포화점보다 여유 있게 잡아야 한다.</p><details><summary>측정 조건</summary><p>부하 생성기는 CPU 4개로 제한, 정상 구간 CPU 사용률 약 25% 이하.</p></details></div></section><section class="item" id="s6"><div class="num">6</div><div class="ibody"><h3>Kubernetes가 더한 비용은 작았다.</h3><p>클러스터 안에서 재면 요청당 약 0.5ms(p50), 최대 처리량 2~3% 감소였고 SLO 처리량은 95 req/s로 같았다. 다만 95 req/s에서 p95가 237ms에서 287ms로 올라 여유가 줄었다.</p><details><summary>측정 조건</summary><p>클러스터 안 Job → Service DNS → API → vLLM 경로로 측정(port-forward 미사용). Service 이름을 vllm으로 지으면 VLLM_PORT 환경변수 충돌로 CrashLoopBackOff가 났다.</p></details></div></section><section class="item" id="s7"><div class="num">7</div><div class="ibody"><h3>대신 GPU 1장 구성에서는 모델 교체가 곧 1분 중단이었다.</h3><p>첫 배포부터 준비까지 76.4초, FP16에서 AWQ로 바꾸는 동안 61.5초 동안 요청이 실패했다(0.5초 간격 탐침 94건 중 65건). GPU가 1장이라 rolling update를 할 수 없다.</p><details><summary>측정 조건</summary><p>콜드 스타트: 컨테이너 시작까지 31초, vLLM 준비 약 44초(torch.compile 11.1초 포함). 운영이라면 GPU 2장 이상의 rolling update나 이벤트 큐 재처리가 필요하다.</p></details></div></section><section class="item" id="s8"><div class="num">8</div><div class="ibody"><h3>증명하지 못한 것.</h3><p>카메라당 요청률은 가정이다. 부하 생성기와 서버가 같은 PC에 있었다. "계산의 75%가 비전 인코더"는 추정이고 프로파일러로 확인하지 않았다. Kubernetes 비용이 kube-proxy 때문인지 같은 노드의 CPU 경합 때문인지 나누지 못했다.</p><details><summary>측정 조건</summary><p>GPU는 데스크톱 RTX 4070 SUPER 1장이다. 서버급 GPU나 여러 장에서는 숫자가 달라진다. 다음 단계: 비전 인코더 최적화, 큐 길이 제한과 429 응답(입장 제어), 무중단 교체, 콜드 스타트 단축.</p></details></div></section>
 <div class="tailnote"></div>
 </article>
+<a class="next" style="--nc:#7c3aed" href="/cases/mlops-retrain/"><div class="l">다음 작업 →</div><div class="t">현장마다 다르게 틀리는 모델, 사람 없이 고칠 수 있나</div></a>
 </div></main>
 <footer class="site"><div class="wrap">
 수치는 모두 측정 조건과 함께 적었습니다. 회사 프로젝트는 제품 구조·내부 경로·고객 정보를 빼고 정리했습니다.

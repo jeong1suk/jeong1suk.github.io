@@ -4,27 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>엣지 VLM 검증기를 2GB 안에 넣기: 양자화보다 런타임이 먼저였다 · 정원석</title>
-<meta name="description" content="회사에서 남은 질문을 공개 데이터로 다시 풀었다. PyTorch FP16 2,810MB에서 llama.cpp Q8_0 1,755MB로, 낙상 AUROC는 낮아지지 않았다(0.960).">
+<meta name="description" content="회사에서 남은 질문을 공개 데이터로 다시 풀었다. 양자화보다 런타임 교체가 컸고, 오탐은 모델보다 흑백(IR) 영상에서 났다.">
+<meta property="og:title" content="엣지 VLM 검증기를 2GB 안에 넣기: 양자화보다 런타임이 먼저였다 · 정원석">
+<meta property="og:description" content="회사에서 남은 질문을 공개 데이터로 다시 풀었다. 양자화보다 런타임 교체가 컸고, 오탐은 모델보다 흑백(IR) 영상에서 났다.">
+<meta property="og:image" content="/assets/img/thumbs/edge-vlm-2gb.jpg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
 <header class="site"><div class="wrap">
-  <a href="/"><strong>정원석</strong></a>
-  <nav><a href="/#work">작업</a><a href="https://github.com/jeong1suk">GitHub</a></nav>
+  <a class="brand" href="/">정원석</a>
+  <nav><a href="/#work">작업</a><a href="/#how">일하는 방식</a><a href="https://github.com/jeong1suk">GitHub</a></nav>
 </div></header>
-<main><div class="wrap">
-<p class="back"><a href="/#work">← 작업 목록</a></p>
-<article>
-<span class="badge">개인 프로젝트 · 공개 데이터 · 코드 공개</span>
+<div class="chero" style="--c:#0d9488"><div class="wrap narrow">
+<a class="back" href="/#work">← 전체 작업</a><br>
+<span class="badge">업무 연장 자체 연구 · 공개 데이터 · 코드 공개</span>
 <h1>엣지 VLM 검증기를 2GB 안에 넣기: 양자화보다 런타임이 먼저였다</h1>
-<div class="tags"><span class="tag">2026.10</span><span class="tag">개인 프로젝트</span><span class="tag">RTX 4070 SUPER(Jetson 미실측)</span><span class="tag">SmolVLM-500M</span><span class="tag">CAUCAFall 500장, D-Fire 854장</span></div>
-<div class="statline"><span class="stat">2,810 → 1,755MB</span><span class="cap">PyTorch FP16 → llama.cpp Q8_0 · 낙상 AUROC 0.960</span></div>
+<div class="st"><span class="n">2,810 → 1,755MB</span><span class="c">낙상 AUROC 0.960 유지</span></div>
+<div class="tags"><span class="tag">2026.10</span><span class="tag">업무 연장 자체 연구</span><span class="tag">RTX 4070 SUPER(Jetson 미실측)</span><span class="tag">SmolVLM-500M</span><span class="tag">CAUCAFall 500장, D-Fire 854장</span></div>
+</div></div>
+<main style="--c:#0d9488"><div class="wrap narrow"><article>
 <div class="intro"><blockquote>
 <p>현업에서 남은 질문을 공개 데이터로 다시 풀었다. 8GB 엣지 장비에서 VLM 2차 검증기에 남는 메모리는 2GB였고, 그래서 상시 구동을 못 하고 이벤트가 생길 때만 띄웠다.<br />
 2GB 안에서 상시로 돌리려면 무엇을 줄여야 하는가. 그 대가로 정확도는 얼마나 잃는가.</p>
 </blockquote>
 <p><img src="/assets/img/edge_vlm_2gb_memory_vs_auroc.png" style="width:100%"></p></div>
-<nav class="toc"><div class="toc-h">한눈에 보기</div><ol>
+<nav class="toc"><div class="toc-h">한눈에 보기 · 항목을 누르면 이동합니다</div><ol>
 <li><a href="#s1">질문을 "정확도가 유지되나"가 아니라 "얼마나 줄이면 상시 구동이 되나"로 잡았다.</a></li>
 <li><a href="#s2">평가셋에서 쉬운 문제를 덜어냈다.</a></li>
 <li><a href="#s3">4bit로 줄여도 2GB 아래로 내려가지 않았다.</a></li>
@@ -37,6 +42,7 @@
 <section class="item" id="s1"><div class="num">1</div><div class="ibody"><h3>질문을 "정확도가 유지되나"가 아니라 "얼마나 줄이면 상시 구동이 되나"로 잡았다.</h3><p>판단 기준을 2GB라는 운영 제약에 묶었다. Jetson은 CPU와 GPU가 메모리를 나눠 쓰기 때문에, 데스크톱에서는 GPU 프로세스 최대값과 CPU RSS 최대값을 더해 대리 지표로 썼다.</p><details><summary>측정 조건</summary><p>0.2초 간격 샘플링, batch 1, 워밍업 3회. 이 값은 Jetson 실측이 아니다.</p></details></div></section><section class="item" id="s2"><div class="num">2</div><div class="ibody"><h3>평가셋에서 쉬운 문제를 덜어냈다.</h3><p>낙상 양성은 falling(착지 직후)과 collapsed(누운 뒤)로 나눴고, 음성에는 걷기 외에 줍기·무릎 꿇기·앉기를 넣었다. 화재는 불꽃과 연기 프롬프트를 따로 뒀다. 나눠 두었기 때문에 불꽃 프롬프트가 연기만 있는 이미지의 30%에 Yes라고 답한다는 것을 셀 수 있었다.</p><details><summary>측정 조건</summary><p>낙상 영상 100개·참가자 10명, 양성 250 / 음성 250. 불꽃 AUROC는 양성 354 대 없음 250. 사진 한 장으로 "넘어지는 중"을 판단하기는 무리라고 봐서 단계를 나눴다.</p></details></div></section><section class="item" id="s3"><div class="num">3</div><div class="ibody"><h3>4bit로 줄여도 2GB 아래로 내려가지 않았다.</h3><p>PyTorch 경로에서 가장 작은 설정(비전까지 NF4)이 2,310MB였다. CPU RSS가 모델 크기와 상관없이 1.5~1.6GB로 고정이었다. "GPU로 옮긴 뒤 CPU에 가중치 사본이 남는다"는 가설은 틀렸다.</p><details><summary>측정 조건</summary><p>로드 직후 RSS 증가는 275MB뿐이고 대부분은 추론 시작 뒤에 늘었다. CUDA_MODULE_LOADING=EAGER에서는 RSS 최대값이 5.7GB까지 올라, CUDA 모듈 로딩 비용으로 해석했다.</p></details></div></section><section class="item" id="s4"><div class="num">4</div><div class="ibody"><h3>런타임을 바꾸자 들어갔다.</h3><p>같은 FP16끼리도 PyTorch 2,810MB, llama.cpp 2,150MB였다. 가중치를 INT8로 줄인 효과(약 400MB)보다 컸다. llama.cpp Q8_0은 1,755MB에 낙상 AUROC 0.960, 불꽃 0.976으로 PyTorch FP16(0.950, 0.971)보다 낮아지지 않았다.</p><details><summary>측정 조건</summary><p>낙상 95% CI 0.929~0.983(영상 단위 부트스트랩 1000회). llama.cpp F16 대비 t=0.55 판정 뒤집힘 0.6~0.8%. llama-server 기본값은 끝난 요청을 RAM에 캐시해 RSS가 9.4GB까지 쌓여서 꺼야 했다.</p></details></div></section><section class="item" id="s5"><div class="num">5</div><div class="ibody"><h3>작은 모델은 답이 아니었다.</h3><p>256M FP16은 낙상 AUROC 0.869로 떨어졌고, 쪼그려 앉기의 54%를 쓰러짐으로 판정했다. 메모리도 2,334MB였다. 줄여야 한다면 큰 모델을 양자화하는 쪽이 낫다.</p><div class="gallery"><div class="gtitle">정답은 모두 &#x27;정상&#x27;. 같은 사진, 다른 모델 크기</div><div class="tiles"><div class="tile"><img src="/assets/img/caucafall/fall_0403.jpg" loading="lazy" alt="앉기"><div class="tcap"><div class="tt">앉기 · 참가자 1</div><div>256M 0.89 → <b class="yes">쓰러짐</b></div><div>500M 0.05 → <b class="no">정상</b></div></div></div><div class="tile"><img src="/assets/img/caucafall/fall_0317.jpg" loading="lazy" alt="무릎 꿇기"><div class="tcap"><div class="tt">무릎 꿇기 · 참가자 4</div><div>256M 0.85 → <b class="yes">쓰러짐</b></div><div>500M 0.07 → <b class="no">정상</b></div></div></div><div class="tile"><img src="/assets/img/caucafall/fall_0447.jpg" loading="lazy" alt="앉기"><div class="tcap"><div class="tt">앉기 · 참가자 10</div><div>256M 0.83 → <b class="yes">쓰러짐</b></div><div>500M 0.04 → <b class="no">정상</b></div></div></div></div><p class="gfoot">쪼그려 앉기 100장 중 쓰러짐 판정: 256M 54%, 500M 9% (FP16, threshold 0.55). 사진은 두 모델의 점수 차이가 큰 사례에서 골랐다.</p><p class="credit">사진: <a href="https://data.mendeley.com/datasets/7w7fccy7ky">CAUCAFall</a> (Universidad del Cauca), <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. 모델 입력과 같은 사람 영역 크롭을 축소해 실었다. 얼굴 흐림은 원본 데이터셋 처리.</p></div><details><summary>측정 조건</summary><p>256M CI 0.815~0.917, 500M CI 0.914~0.976. 구간이 끝에서 조금 겹친다.</p></details></div></section><section class="item" id="s6"><div class="num">6</div><div class="ibody"><h3>threshold는 다시 정해야 했다. 사람 차이로 보였던 것의 상당 부분은 주간·야간이었다.</h3><p>참가자 1~5번으로 보정하고 6~10번으로 평가하자, 같은 FP16에서도 두 그룹의 FPR이 0.016과 0.120으로 갈렸다. 오탐을 참가자별로 세어 보니 17건 중 8건이 한 사람이었고, 그 영상은 흑백(IR)이었다. 흑백 FPR 0.220, 컬러 0.030.</p><div class="gallery"><div class="gtitle">정답은 모두 &#x27;정상&#x27;. 같은 동작, 흑백(IR)과 컬러</div><div class="tiles"><div class="tile"><img src="/assets/img/caucafall/fall_0378.jpg" loading="lazy" alt="물건 줍기"><div class="tcap"><div class="tt">물건 줍기 · 참가자 6 · 흑백</div><div>500M 0.86 → <b class="yes">쓰러짐</b></div></div></div><div class="tile"><img src="/assets/img/caucafall/fall_0383.jpg" loading="lazy" alt="물건 줍기"><div class="tcap"><div class="tt">물건 줍기 · 참가자 7 · 컬러</div><div>500M 0.02 → <b class="no">정상</b></div></div></div><div class="tile"><img src="/assets/img/caucafall/fall_0325.jpg" loading="lazy" alt="무릎 꿇기"><div class="tcap"><div class="tt">무릎 꿇기 · 참가자 6 · 흑백</div><div>500M 0.57 → <b class="yes">쓰러짐</b></div></div></div><div class="tile"><img src="/assets/img/caucafall/fall_0343.jpg" loading="lazy" alt="무릎 꿇기"><div class="tcap"><div class="tt">무릎 꿇기 · 참가자 9 · 컬러</div><div>500M 0.05 → <b class="no">정상</b></div></div></div></div><p class="gfoot">음성 오탐률(500M FP16, threshold 0.55): 흑백 0.220(50장) · 컬러 0.030(200장). 흑백 참가자는 2명뿐이라 개인 차이와 완전히 분리하지 못했다. 사진은 판정이 갈린 사례에서 골랐다.</p><p class="credit">사진: <a href="https://data.mendeley.com/datasets/7w7fccy7ky">CAUCAFall</a> (Universidad del Cauca), <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. 모델 입력과 같은 사람 영역 크롭을 축소해 실었다. 얼굴 흐림은 원본 데이터셋 처리.</p></div><details><summary>측정 조건</summary><p>흑백 참가자는 2명뿐이라 IR 효과와 개인 차이를 다 떼어내지 못했다. 가설로 둔다. 화재는 음성 50~100장으로 보정이 됐지만, 낙상은 다른 참가자의 음성 125장을 다 써도 23~29%의 경우 목표 FPR의 2배를 넘었다. 그래서 threshold는 같은 카메라에서 주간·야간을 나눠 정하자고 권고했다.</p></details></div></section><section class="item" id="s7"><div class="num">7</div><div class="ibody"><h3>이전 LoRA가 실패한 지점을 이번 실험 조건으로 막았다.</h3><p>이전 화재 LoRA는 복구 수치가 학습에 들어간 이벤트에서 나왔고, 처음 보는 음성에서 무너졌다. 이번에는 D-Fire 학습 분할만 썼고, 체크포인트는 따로 떼어 둔 검증 세트로 골랐으며, 평가셋은 마지막에 한 번만 열었다. 연기 AUROC는 0.867에서 0.937로 올랐다. LoRA를 합친 모델도 Q8_0에서 1,754MB, 판정 뒤집힘 0.2~1.1%로 버텼다.</p><details><summary>측정 조건</summary><p>학습 4,429장, 언어 모델에만 LoRA(r=16), 답 토큰에만 loss. 평가 이미지와 번호 ±20 이내인 학습 이미지 50장 제외. 연기 CI가 기본 모델과 겹치지 않는다. 작은 연기는 0.51에서 0.86, 불꽃 프롬프트가 연기에 속는 비율은 30%에서 3%(모두 HF FP16 기준).</p></details></div></section><section class="item" id="s8"><div class="num">8</div><div class="ibody"><h3>증명하지 못한 것.</h3><p>Jetson에서 재지 않았다. LoRA를 붙이자 낙상 점수가 아래로 밀려 t=0.55 recall이 0.804에서 0.632가 됐는데, AUROC는 그대로였고 원인은 모른다. 연기 개선 폭의 상당 부분은 AoF(고정 카메라, 학습 분할에 같은 카메라가 있을 수 있음)에서 나왔다. 처음 보는 카메라에서는 더 작을 수 있다.</p><details><summary>측정 조건</summary><p>연기 AUROC는 AoF 0.638에서 0.851, WEB 0.961에서 0.981. llama.cpp는 이미지를 항상 두 번(overview와 타일) 넣어 HF와 전처리가 다르다. CAUCAFall은 실내 1곳·참가자 10명이고, falling 그룹은 착지 직후 0.35초다.</p></details></div></section>
 <div class="tailnote"><p>코드, 판단 기록, 전체 수치: <a href="https://github.com/jeong1suk/edge-vlm-verifier-2gb">github.com/jeong1suk/edge-vlm-verifier-2gb</a></p></div>
 </article>
+<a class="next" style="--nc:#2563eb" href="/cases/vlm-serving/"><div class="l">다음 작업 →</div><div class="t">GPU 한 장으로 카메라 몇 대까지 버티나</div></a>
 </div></main>
 <footer class="site"><div class="wrap">
 수치는 모두 측정 조건과 함께 적었습니다. 회사 프로젝트는 제품 구조·내부 경로·고객 정보를 빼고 정리했습니다.
