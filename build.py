@@ -107,7 +107,7 @@ def domain_chips(slug, cls="dchip"):
 
 
 EMAIL = "ssukgoon@gmail.com"
-LINKEDIN = ""  # 링크드인 주소를 넣으면 버튼이 나타난다
+LINKEDIN = "https://www.linkedin.com/in/wonseok-jeong-304021252"
 
 # 이력서(잡코리아)와 같은 사실만. 현 직장은 공개 사이트라 회사명 대신 업종으로 적는다.
 CAREER = [
