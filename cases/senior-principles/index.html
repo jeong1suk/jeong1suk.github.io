@@ -7,7 +7,10 @@
 <meta name="description" content="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들어 카메라·VMS 연동 시스템 개발에 실제로 썼고, 함정 시나리오 64종으로 평가했다. &quot;위반 0%&quot;는 수정 전 플러그인을 채점한 결과였다.">
 <meta property="og:title" content="AI 코딩 에이전트에게 &quot;시니어의 판단&quot;을 가르치고, 그 효과를 측정하기 · 정원석">
 <meta property="og:description" content="14개 도메인의 시니어 판단 원칙을 Claude Code 플러그인으로 만들어 카메라·VMS 연동 시스템 개발에 실제로 썼고, 함정 시나리오 64종으로 평가했다. &quot;위반 0%&quot;는 수정 전 플러그인을 채점한 결과였다.">
-<meta property="og:image" content="/assets/img/thumbs/edge-vlm-2gb.jpg">
+<meta property="og:image" content="https://jeong1suk.github.io/assets/img/thumbs/edge-vlm-2gb.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/assets/style.css">
 </head>
@@ -46,43 +49,18 @@
 <li>약한 출처(블로그)와 공식 문서가 충돌해도 <strong>확신에 찬 결론</strong>을 냅니다.</li>
 <li>이해관계자가 던진 희망 일정을 <strong>추정치처럼</strong> 받아들입니다.</li>
 </ul></div></section><section class="item" id="s2"><div class="num">2</div><div class="ibody"><h3>접근: 판단 원칙을 에이전트의 작업 흐름 안에 넣기</h3><p>디버깅, 보안, 롤아웃, 테스트 전략, 인시던트 대응, 리서치, 추정, 기술 글쓰기 등 <strong>14개 도메인의 시니어 엔지니어링 원칙</strong>을 문서로 만들었습니다. 그리고 Claude Code의 확장 지점(Skills, Hooks, Subagent)을 이용해 에이전트에 연결했습니다.</p>
-<pre class="mermaid">flowchart LR
-    U[사용자 요청] --&gt; H1[UserPromptSubmit Hook&lt;br/&gt;판단 체크리스트 주입]
-    H1 --&gt; M[AI 에이전트]
-    R[라우터 서브에이전트&lt;br/&gt;모호한 요청 → 적합한 원칙 추천] -.-&gt; M
-    M --&gt;|필요할 때 로드| S[(14개 원칙 Skills)]
-    M --&gt;|코드 수정 시도| G{PreToolUse 게이트&lt;br/&gt;선택형}
-    G --&gt;|원칙 참조 기록 없음| B[차단 + 필요한 증거 안내]
-    G --&gt;|참조 기록 있음| T[Bash / Write / Edit 실행]
-</pre>
+<figure><a href="/assets/img/diagrams/senior-principles_1.png" target="_blank"><img src="/assets/img/diagrams/senior-principles_1.png" loading="lazy" alt="diagrams/senior-principles_1"></a></figure>
 <ul>
 <li><strong>기본 모드:</strong> 응답을 생성하기 전에 짧은 체크리스트를 주입합니다. 아무것도 차단하지 않습니다.</li>
 <li><strong>선택 모드:</strong> 원칙 스킬을 참조하기 전에는 코드 수정 도구를 차단합니다. 차단 메시지에는 "진단 전에 재현", "롤아웃 전에 기존/신규 기준선 비교"처럼 <strong>작업 단계별로 필요한 증거</strong>를 안내합니다.</li>
 <li><strong>라우터:</strong> "이거 봐줘"처럼 도메인이 불분명한 요청이 오면 어떤 원칙을 적용할지 추천합니다.</li>
-</ul></div></section><section class="item" id="s3"><div class="num">3</div><div class="ibody"><h3>설계 진화: 실패에서 배운 세 번의 전환</h3><pre class="mermaid">timeline
-    title 20일, 126커밋, 15개 버전
-    1단계 : 대형 단일 플러그인에서 원칙 레이어만 분리
-    2단계 : 응답 종료 차단 + 확인 토큰 → AI가 토큰을 기계적으로 생성해 우회
-    3단계 : 비차단 컨텍스트 주입으로 전환
-    4단계 : 훅 동작 8라운드 실험 → 도구 실행 단계의 선택형 게이트
-    5단계 : 평가 하네스로 원칙 보강 반복, 모델별 프로필, 라우터 추가
-</pre>
+</ul></div></section><section class="item" id="s3"><div class="num">3</div><div class="ibody"><h3>설계 진화: 실패에서 배운 세 번의 전환</h3><figure><a href="/assets/img/diagrams/senior-principles_2.png" target="_blank"><img src="/assets/img/diagrams/senior-principles_2.png" loading="lazy" alt="diagrams/senior-principles_2"></a></figure>
 <ul>
 <li><strong>전환 1 (차단 → 주입):</strong> 처음에는 "원칙을 확인했다는 토큰을 응답에 포함해야 종료 가능"하게 만들었습니다. 토큰을 턴마다 랜덤으로 바꾸고 재사용도 막았지만, AI는 내용을 읽지 않고 토큰만 생성할 수 있었습니다. 여기서 <strong>텍스트로 충족할 수 있는 조건은 강제 수단이 될 수 없다</strong>는 결론을 내렸습니다.</li>
 <li><strong>전환 2 (주입 → 도구 실행 게이트):</strong> 텍스트가 아니라 <strong>실제 도구 호출 기록</strong>을 조건으로 쓰면 우회가 어려워진다고 가정했습니다. 공식 문서만 믿지 않고 8라운드 실험으로 런타임 동작을 확인했습니다. 대화 기록이 디스크에 기록되는 시점의 지연, 스킬 호출 식별자 구조, 차단 응답의 실제 효과, 플러그인 훅과 사용자 설정 훅의 병합을 각각 검증한 뒤 구현했습니다.</li>
 <li><strong>전환 3 (게이트의 위상 재정의):</strong> 직접 공격해 보니 <strong>스킬을 한 번만 형식적으로 호출해도 세션 전체가 풀렸습니다.</strong> 호출 횟수나 시간 조건을 강화하는 방안도 검토했지만 근본 해결이 아니라고 판단했습니다. 그래서 게이트를 "보안 장치"가 아닌 <strong>"협조적인 사용자를 위한 리마인더 강화"</strong>로 공식 재분류하고, 위협 모델(STRIDE)과 알려진 한계 목록을 문서화했습니다.</li>
 </ul></div></section><section class="item" id="s4"><div class="num">4</div><div class="ibody"><h3>측정: "좋아진 것 같다"에서 끝내지 않기</h3><p>프롬프트 개선은 효과를 체감에만 의존하기 쉽습니다. 그래서 자동 평가 하네스를 만들었습니다.</p>
-<pre class="mermaid">flowchart LR
-    subgraph Actor[실행 세션 · 플러그인 ON]
-        SC[함정 시나리오] --&gt; A[AI가 작업 수행]
-    end
-    subgraph Scorer[채점 세션 · 플러그인 OFF]
-        P[1차 채점&lt;br/&gt;Claude] --&gt; V[결정론적 검증기&lt;br/&gt;스키마·인용 정확성]
-        V --&gt; D[반대 입장 재검토&lt;br/&gt;Codex / 타사 모델]
-    end
-    A --&gt;|작업 기록| P
-    D --&gt; O[Meta 세션&lt;br/&gt;실행·집계만 담당]
-</pre>
+<figure><a href="/assets/img/diagrams/senior-principles_3.png" target="_blank"><img src="/assets/img/diagrams/senior-principles_3.png" loading="lazy" alt="diagrams/senior-principles_3"></a></figure>
 <ul>
 <li><strong>세션 분리:</strong> 채점자가 평가 대상 플러그인의 영향을 받지 않도록 세 세션을 분리했습니다.</li>
 <li><strong>타사 모델로 교차 검증:</strong> 같은 계열 모델끼리는 오류도 비슷하게 낼 수 있다고 보고, 다른 회사 모델에게 반대 입장에서 재검토를 맡겼습니다.</li>
@@ -141,9 +119,6 @@
 <footer class="site"><div class="wrap">
 수치는 모두 측정 조건과 함께 적었습니다. 회사 프로젝트는 제품 구조·내부 경로·고객 정보를 빼고 정리했습니다.
 </div></footer>
-<script type="module">
-import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-mermaid.initialize({ startOnLoad: true, theme: "neutral", fontFamily: "Pretendard Variable, Pretendard, sans-serif" });
-</script>
+
 </body>
 </html>

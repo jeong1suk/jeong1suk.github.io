@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src" / "ko"
 OUT_CASES = ROOT / "cases"
 GITHUB = "https://github.com/jeong1suk"
+SITE_URL = "https://jeong1suk.github.io"
 
 # 홈 카드의 수치·요약은 각 케이스 원고에 있는 사실만 옮긴다(새 수치를 만들지 않는다).
 # hook = 카드 제목(궁금증을 만드는 질문). 원고 제목은 상세 페이지에서 쓴다.
@@ -84,7 +85,9 @@ LEAK_PATTERNS = [
 
 MERMAID_JS = """<script type="module">
 import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-mermaid.initialize({ startOnLoad: true, theme: "neutral", fontFamily: "Pretendard Variable, Pretendard, sans-serif" });
+mermaid.initialize({ startOnLoad: false, theme: "neutral", fontFamily: "Pretendard Variable, Pretendard, sans-serif" });
+await document.fonts.ready;
+await mermaid.run();
 </script>"""
 
 FONT = "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
@@ -257,7 +260,10 @@ def page(title, body, desc=""):
 <meta name="description" content="{html.escape(desc)}">
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(desc)}">
-<meta property="og:image" content="/assets/img/thumbs/edge-vlm-2gb.jpg">
+<meta property="og:image" content="{SITE_URL}/assets/img/thumbs/edge-vlm-2gb.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="{FONT}">
 <link rel="stylesheet" href="/assets/style.css">
 </head>
@@ -347,12 +353,25 @@ def render_case(p, nxt):
     tag_html = "".join(f'<span class="tag">{html.escape(t)}</span>' for t in p["tags"])
     toc = "\n".join(f'<li><a href="#s{i["n"]}">{inline(i["head"])}</a></li>' for i in p["items"])
     blocks = []
+    mm = [0]
+
+    def mermaid_to_img(text):
+        """원고의 mermaid 블록 → 미리 그린 PNG(assets/img/diagrams/<slug>_<k>.png)가 있으면 그림으로 대체."""
+        def sub(m):
+            mm[0] += 1
+            name = f"diagrams/{p['slug']}_{mm[0]}"
+            if (ROOT / "assets" / "img" / f"{name}.png").exists():
+                return f"\n\nFIGBLOCK:{name}\n\n"
+            return m.group(0)
+        return MERMAID_RE.sub(sub, text)
+
     for i in p["items"]:
+        i["body"] = mermaid_to_img(i["body"])
         notes = ""
         if i["notes"]:
             notes = '<details><summary>측정 조건</summary>' + "".join(f"<p>{n.strip()}</p>" for n in i["notes"]) + "</details>"
         blocks.append(f'<section class="item" id="s{i["n"]}"><div class="num">{i["n"]}</div><div class="ibody">'
-                      f'<h3>{inline(i["head"])}</h3>{md(i["body"])}{fig_html(figs.get(i["n"], []))}{notes}</div></section>')
+                      f'<h3>{inline(i["head"])}</h3>{re.sub(r"<p>FIGBLOCK:(.*?)</p>", lambda m: fig_html([m.group(1)]), md(i["body"]))}{fig_html(figs.get(i["n"], []))}{notes}</div></section>')
     tail_html = md(p["tail"].replace("<sub>", "").replace("</sub>", ""))
     body = f"""<div class="chero" style="--c:{p['accent']}"><div class="wrap narrow">
 <a class="back" href="/#work">← 전체 작업</a><br>
@@ -467,6 +486,13 @@ def main():
     order = [p for p in PROJECTS if p["group"] == "main"] + [p for p in PROJECTS if p["group"] == "more"]
     outputs = [render_case(p, order[(k + 1) % len(order)]) for k, p in enumerate(order)]
     outputs.append(render_index())
+    nf = ROOT / "404.html"
+    nf.write_text(page("페이지를 찾을 수 없습니다 · 정원석", """<section class="hero"><div class="wrap">
+<p class="eyebrow">404</p><h1>찾는 페이지가 없습니다</h1>
+<p class="lead">주소가 바뀌었거나 아직 올리지 않은 페이지입니다.</p>
+<div class="btns"><a class="btn-primary" href="/">처음으로</a><a class="btn-ghost" href="/#work">작업 보기</a></div>
+</div></section>""", "페이지를 찾을 수 없습니다"), encoding="utf-8")
+    outputs.append(nf)
     sources = list((ROOT / "src").rglob("*.md")) + list((ROOT / "src").rglob("*.html"))
     bad = leak_check(outputs + sources)
     for o in outputs:
