@@ -72,6 +72,21 @@ section.block { padding:72px 0 8px; }
 .card.wide .thumb { width:42%; aspect-ratio:auto; min-height:200px; }
 .card.wide .cbody { width:58%; }
 
+/* domains */
+.filters { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 18px; }
+.fbtn { font:inherit; font-size:14px; font-weight:700; cursor:pointer; border:1px solid var(--line); background:#fff;
+        color:#334155; border-radius:999px; padding:7px 14px; transition:all .15s; }
+.fbtn b { font-weight:800; opacity:.55; margin-left:2px; }
+.fbtn:hover { border-color:var(--d, var(--fg)); color:var(--d, var(--fg)); }
+.fbtn.on { background:var(--d, var(--fg)); border-color:var(--d, var(--fg)); color:#fff; }
+.fbtn.on b { opacity:.8; }
+.dchips { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px; }
+.dchip { font-size:12px; font-weight:800; color:var(--d); background:color-mix(in srgb, var(--d) 10%, #fff);
+         border:1px solid color-mix(in srgb, var(--d) 28%, #fff); border-radius:6px; padding:2px 8px; }
+.hero-d { margin:18px 0 0; }
+.hero-d .dchip { color:#fff; background:color-mix(in srgb, var(--d) 70%, transparent); border-color:rgba(255,255,255,.25); }
+.chero .hero-d + .badge { margin-top:10px; }
+
 /* habits */
 .habits { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
 .habit { border:1px solid var(--line); border-radius:16px; padding:22px; background:var(--soft); text-decoration:none; transition:border-color .15s; }

@@ -67,6 +67,50 @@ PROJECTS = [
                  "처음 보는 카메라에서는 정상 장면이 전부 화재가 됐다."),
 ]
 
+# 기술 분야 태그 (필터·카드·상세 페이지 공통). 색은 분야별 고정.
+DOMAINS = {
+    "VLM": "#4f46e5",
+    "엣지 디바이스": "#0d9488",
+    "경량화·양자화": "#b45309",
+    "모델 서빙": "#2563eb",
+    "MLOps": "#7c3aed",
+    "파인튜닝": "#db2777",
+    "LLM 에이전트": "#0f766e",
+}
+DOMAINS_BY_SLUG = {
+    "edge-deploy": ["VLM", "엣지 디바이스", "경량화·양자화"],
+    "edge-vlm-2gb": ["VLM", "엣지 디바이스", "경량화·양자화"],
+    "vlm-serving": ["VLM", "모델 서빙"],
+    "mlops-retrain": ["MLOps", "엣지 디바이스", "경량화·양자화"],
+    "senior-principles": ["LLM 에이전트"],
+    "fire-lora": ["VLM", "파인튜닝"],
+}
+
+
+def domain_chips(slug, cls="dchip"):
+    return "".join(f'<span class="{cls}" style="--d:{DOMAINS[d]}">{html.escape(d)}</span>' for d in DOMAINS_BY_SLUG[slug])
+
+
+FILTER_JS = """<script>
+document.querySelectorAll(".fbtn").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var f = b.dataset.f;
+    document.querySelectorAll(".fbtn").forEach(function (x) { x.classList.toggle("on", x === b); });
+    document.querySelectorAll(".card").forEach(function (c) {
+      c.style.display = (!f || c.dataset.domains.split("|").indexOf(f) >= 0) ? "" : "none";
+    });
+    document.querySelectorAll("section.block").forEach(function (sec) {
+      var cards = sec.querySelectorAll(".card");
+      if (!cards.length) return;
+      var any = Array.prototype.some.call(cards, function (c) { return c.style.display !== "none"; });
+      sec.style.display = any ? "" : "none";
+    });
+    var flow = document.querySelector(".flow");
+    if (flow) flow.style.display = f ? "none" : "";
+  });
+});
+</script>"""
+
 HERO_STATS = [("1.8초 → 300ms", "Jetson 8GB, VLM 검증 지연"),
               ("2,810 → 1,755MB", "정확도 유지, 런타임 교체"),
               ("25 → 95건/초", "GPU 한 장, 연속 배칭")]
@@ -166,6 +210,21 @@ section.block { padding:72px 0 8px; }
 .card.wide { grid-column:1 / -1; flex-direction:row; }
 .card.wide .thumb { width:42%; aspect-ratio:auto; min-height:200px; }
 .card.wide .cbody { width:58%; }
+
+/* domains */
+.filters { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 18px; }
+.fbtn { font:inherit; font-size:14px; font-weight:700; cursor:pointer; border:1px solid var(--line); background:#fff;
+        color:#334155; border-radius:999px; padding:7px 14px; transition:all .15s; }
+.fbtn b { font-weight:800; opacity:.55; margin-left:2px; }
+.fbtn:hover { border-color:var(--d, var(--fg)); color:var(--d, var(--fg)); }
+.fbtn.on { background:var(--d, var(--fg)); border-color:var(--d, var(--fg)); color:#fff; }
+.fbtn.on b { opacity:.8; }
+.dchips { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px; }
+.dchip { font-size:12px; font-weight:800; color:var(--d); background:color-mix(in srgb, var(--d) 10%, #fff);
+         border:1px solid color-mix(in srgb, var(--d) 28%, #fff); border-radius:6px; padding:2px 8px; }
+.hero-d { margin:18px 0 0; }
+.hero-d .dchip { color:#fff; background:color-mix(in srgb, var(--d) 70%, transparent); border-color:rgba(255,255,255,.25); }
+.chero .hero-d + .badge { margin-top:10px; }
 
 /* habits */
 .habits { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
@@ -375,6 +434,7 @@ def render_case(p, nxt):
     tail_html = md(p["tail"].replace("<sub>", "").replace("</sub>", ""))
     body = f"""<div class="chero" style="--c:{p['accent']}"><div class="wrap narrow">
 <a class="back" href="/#work">← 전체 작업</a><br>
+<div class="dchips hero-d">{domain_chips(p["slug"])}</div>
 <span class="badge">{html.escape(p['label'])}</span>
 <h1>{html.escape(p['title'])}</h1>
 <div class="st"><span class="n">{html.escape(p['stat'])}</span><span class="c">{html.escape(p['stat_cap'])}</span></div>
@@ -399,10 +459,11 @@ def render_case(p, nxt):
 def card(p, wide=False):
     thumb = ROOT / "assets" / "img" / "thumbs" / f"{p['slug']}.jpg"
     img = f'<img src="/assets/img/thumbs/{p["slug"]}.jpg" alt="" loading="lazy">' if thumb.exists() else ""
-    return (f'<a class="card{" wide" if wide else ""}" style="--c:{p["accent"]}" href="/cases/{p["slug"]}/">'
+    doms = "|".join(DOMAINS_BY_SLUG[p["slug"]])
+    return (f'<a class="card{" wide" if wide else ""}" data-domains="{html.escape(doms)}" style="--c:{p["accent"]}" href="/cases/{p["slug"]}/">'
             f'<div class="thumb{" graph" if img and p["slug"] != "edge-vlm-2gb" else ""}{"" if img else " noimg"}">{img}<span class="kind">{html.escape(p["kind"])}</span>'
             f'<div class="st"><div class="n">{html.escape(p["stat"])}</div><div class="c">{html.escape(p["stat_cap"])}</div></div></div>'
-            f'<div class="cbody"><div class="hook">{html.escape(p["hook"])}</div>'
+            f'<div class="cbody"><div class="dchips">{domain_chips(p["slug"])}</div><div class="hook">{html.escape(p["hook"])}</div>'
             f'<p class="sum">{html.escape(p["summary"])}</p>'
             f'<div class="foot"><span>{p["period"]} · {html.escape(p["label"].split(" · ")[1] if " · " in p["label"] else "")}</span>'
             f'<span class="go">읽기 →</span></div></div></a>')
@@ -418,6 +479,10 @@ def render_index():
         f'<a class="habit" href="/cases/{slug}/#s{n}"><div class="no">0{k+1}</div><h3>{html.escape(h)}</h3>'
         f'<p>{html.escape(t)}</p><div class="src">{html.escape(by[slug]["hook"])} · {n}번 →</div></a>'
         for k, (h, t, slug, n) in enumerate(HABITS))
+    counts = {d: sum(d in v for v in DOMAINS_BY_SLUG.values()) for d in DOMAINS}
+    filters = '<button class="fbtn on" data-f="">전체 <b>%d</b></button>' % len(PROJECTS) + "".join(
+        f'<button class="fbtn" data-f="{html.escape(d)}" style="--d:{c}">{html.escape(d)} <b>{counts[d]}</b></button>'
+        for d, c in DOMAINS.items() if counts[d])
     flow = "".join([
         f'<a href="/cases/edge-deploy/"><span class="who">회사</span>8GB 기기에 2차 검증기를 올릴 수 있나</a><span class="arr">→</span>',
         f'<a href="/cases/edge-vlm-2gb/"><span class="who">업무 연장 연구</span>2GB 안에서 상시로 돌리려면</a><span class="arr">→</span>',
@@ -434,6 +499,7 @@ def render_index():
 <section class="block" id="work"><div class="wrap">
 <h2 class="sec-h">대표 작업</h2>
 <p class="sec-sub">회사에서 남은 질문을 직접 이어서 풀었습니다. 카드를 누르면 과정과 실패까지 볼 수 있습니다.</p>
+<div class="filters" role="group" aria-label="기술 분야 필터">{filters}</div>
 <div class="flow">{flow}</div>
 <div class="grid">
 {main_cards}
@@ -452,6 +518,7 @@ def render_index():
 <div class="habits">{habits}</div>
 </div></section>
 
+{FILTER_JS}
 <section class="band"><div class="wrap">
 <h2>코드와 판단 기록은 GitHub에 있습니다</h2>
 <p>공개 데이터로 다시 푼 연구는 실험 스크립트와 결정 기록까지 공개했습니다.</p>
